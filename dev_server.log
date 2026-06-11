@@ -1,0 +1,42 @@
+nohup: ignoring input
+
+> indieaxis@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://169.254.0.21:3000
+- Environments: .env
+✓ Ready in 3.4s
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+ HEAD / 200 in 3.7s (next.js: 2.8s, proxy.ts: 100ms, application-code: 805ms)
+ GET /onboarding 200 in 3.6s (next.js: 2.6s, proxy.ts: 10ms, application-code: 997ms)
+ GET / 200 in 1757ms (next.js: 1278ms, proxy.ts: 18ms, application-code: 461ms)
+ GET /api/auth/session 200 in 878ms (next.js: 836ms, proxy.ts: 7ms, application-code: 35ms)
+ GET /api/auth/session 200 in 46ms (next.js: 27ms, proxy.ts: 5ms, application-code: 14ms)
+ HEAD / 200 in 134ms (next.js: 6ms, proxy.ts: 4ms, application-code: 124ms)
+ POST /api/auth/forgot-password 200 in 588ms (next.js: 42ms, proxy.ts: 6ms, application-code: 541ms)
+ GET / 200 in 60ms (next.js: 3ms, proxy.ts: 3ms, application-code: 54ms)
+ GET /forgot-password 200 in 1553ms (next.js: 1477ms, proxy.ts: 5ms, application-code: 71ms)
+ GET /api/auth/session 200 in 65ms (next.js: 35ms, proxy.ts: 4ms, application-code: 26ms)
+ GET /api/auth/session 200 in 24ms (next.js: 7ms, proxy.ts: 3ms, application-code: 14ms)
+ GET /forgot-password 200 in 49ms (next.js: 4ms, proxy.ts: 3ms, application-code: 41ms)
+ GET /api/auth/session 200 in 47ms (next.js: 25ms, proxy.ts: 3ms, application-code: 18ms)
+ GET /api/auth/session 200 in 21ms (next.js: 6ms, proxy.ts: 3ms, application-code: 13ms)
+ GET /forgot-password 200 in 112ms (next.js: 21ms, proxy.ts: 5ms, application-code: 86ms)
+ GET /api/auth/session 200 in 50ms (next.js: 25ms, proxy.ts: 3ms, application-code: 22ms)
+ GET /api/auth/session 200 in 35ms (next.js: 12ms, proxy.ts: 10ms, application-code: 13ms)
+ GET /reset-password 200 in 625ms (next.js: 496ms, proxy.ts: 3ms, application-code: 127ms)
+ GET /api/auth/session 200 in 49ms (next.js: 25ms, proxy.ts: 8ms, application-code: 16ms)
+ GET /api/auth/session 200 in 22ms (next.js: 5ms, proxy.ts: 4ms, application-code: 13ms)
+ GET /reset-password 200 in 45ms (next.js: 4ms, proxy.ts: 3ms, application-code: 39ms)
+ GET /api/auth/session 200 in 37ms (next.js: 21ms, proxy.ts: 3ms, application-code: 14ms)
+ GET /api/auth/session 200 in 22ms (next.js: 4ms, proxy.ts: 3ms, application-code: 15ms)
+ GET / 200 in 92ms (next.js: 5ms, proxy.ts: 4ms, application-code: 83ms)
+ GET / 200 in 68ms (next.js: 4ms, proxy.ts: 3ms, application-code: 61ms)
+ GET / 200 in 78ms (next.js: 3ms, proxy.ts: 3ms, application-code: 72ms)
+ GET / 200 in 65ms (next.js: 2ms, proxy.ts: 3ms, application-code: 60ms)
+ GET / 200 in 125ms (next.js: 2ms, proxy.ts: 4ms, application-code: 119ms)
+ GET / 200 in 73ms (next.js: 2ms, proxy.ts: 4ms, application-code: 66ms)
+ GET / 200 in 68ms (next.js: 4ms, proxy.ts: 3ms, application-code: 61ms)

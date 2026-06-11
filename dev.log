@@ -1,0 +1,222 @@
+nohup: ignoring input
+
+> indieaxis@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://169.254.0.21:3000
+- Environments: .env
+✓ Ready in 305ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+⨯ Error: The edge runtime does not support Node.js 'crypto' module.
+Learn More: https://nextjs.org/docs/messages/node-module-in-edge-runtime
+    at ignore-listed frames
+ GET / 404 in 1453ms (next.js: -101471µs, proxy.ts: 1446ms, application-code: 108ms)
+[browser] Uncaught Error: The edge runtime does not support Node.js 'crypto' module.
+Learn More: https://nextjs.org/docs/messages/node-module-in-edge-runtime
+○ Compiling /_not-found/page ...
+⨯ Error: The edge runtime does not support Node.js 'crypto' module.
+Learn More: https://nextjs.org/docs/messages/node-module-in-edge-runtime
+    at ignore-listed frames
+ GET / 404 in 72ms (next.js: -19326µs, proxy.ts: 67ms, application-code: 24ms)
+⚠ Blocked cross-origin request to Next.js dev resource /__nextjs_original-stack-frames from "indieaxis-official-v1.loca.lt".
+Cross-origin access to Next.js dev resources is blocked by default for safety.
+
+To allow this host in development, add it to "allowedDevOrigins" in next.config.js and restart the dev server:
+
+// next.config.js
+module.exports = {
+  allowedDevOrigins: ['indieaxis-official-v1.loca.lt'],
+}
+
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+⚠ Blocked cross-origin request to Next.js dev resource /_next/webpack-hmr from "indieaxis-official-v1.loca.lt".
+Cross-origin access to Next.js dev resources is blocked by default for safety.
+
+To allow this host in development, add it to "allowedDevOrigins" in next.config.js and restart the dev server:
+
+// next.config.js
+module.exports = {
+  allowedDevOrigins: ['indieaxis-official-v1.loca.lt'],
+}
+
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+⨯ Error: The edge runtime does not support Node.js 'crypto' module.
+Learn More: https://nextjs.org/docs/messages/node-module-in-edge-runtime
+    at ignore-listed frames
+⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://169.254.0.21:3000
+- Environments: .env
+✓ Ready in 281ms
+⚠ Invalid next.config.ts options detected: 
+⚠     Unrecognized key(s) in object: 'allowedDevOrigins' at "experimental"
+⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+- Experiments (use with caution):
+  ? allowedDevOrigins (invalid experimental key)
+
+⨯ Error: The edge runtime does not support Node.js 'crypto' module.
+Learn More: https://nextjs.org/docs/messages/node-module-in-edge-runtime
+    at ignore-listed frames
+ GET / 404 in 476ms (next.js: -105971µs, proxy.ts: 407ms, application-code: 175ms)
+[browser] Uncaught Error: The edge runtime does not support Node.js 'crypto' module.
+Learn More: https://nextjs.org/docs/messages/node-module-in-edge-runtime
+⚠ Blocked cross-origin request to Next.js dev resource /_next/webpack-hmr from "indieaxis-official-v1.loca.lt".
+Cross-origin access to Next.js dev resources is blocked by default for safety.
+
+To allow this host in development, add it to "allowedDevOrigins" in next.config.js and restart the dev server:
+
+// next.config.js
+module.exports = {
+  allowedDevOrigins: ['indieaxis-official-v1.loca.lt'],
+}
+
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+✓ Compiled in 140ms
+ GET / 200 in 1768ms (next.js: 1227ms, proxy.ts: 4ms, application-code: 537ms)
+ GET /api/auth/session 200 in 1682ms (next.js: 1657ms, proxy.ts: 4ms, application-code: 21ms)
+ GET /api/auth/session 200 in 29ms (next.js: 18ms, proxy.ts: 4ms, application-code: 7ms)
+ GET / 200 in 84ms (next.js: 7ms, proxy.ts: 4ms, application-code: 73ms)
+ GET / 200 in 63ms (next.js: 4ms, proxy.ts: 2ms, application-code: 56ms)
+ GET / 200 in 85ms (next.js: 4ms, proxy.ts: 3ms, application-code: 78ms)
+⚠ Blocked cross-origin request to Next.js dev resource /__nextjs_font/geist-latin.woff2 from "indieaxis-official-v1.loca.lt".
+Cross-origin access to Next.js dev resources is blocked by default for safety.
+
+To allow this host in development, add it to "allowedDevOrigins" in next.config.js and restart the dev server:
+
+// next.config.js
+module.exports = {
+  allowedDevOrigins: ['indieaxis-official-v1.loca.lt'],
+}
+
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ GET /signup 200 in 671ms (next.js: 573ms, proxy.ts: 4ms, application-code: 94ms)
+ GET /signup 200 in 39ms (next.js: 2ms, proxy.ts: 3ms, application-code: 33ms)
+ GET /signup?email=test%40indieaxis.com&password=password123 200 in 42ms (next.js: 3ms, proxy.ts: 3ms, application-code: 35ms)
+ GET /signup?email=test%40indieaxis.com&password=password123 200 in 52ms (next.js: 3ms, proxy.ts: 3ms, application-code: 46ms)
+ GET / 200 in 63ms (next.js: 3ms, proxy.ts: 3ms, application-code: 58ms)
+ GET /signup 200 in 40ms (next.js: 4ms, proxy.ts: 3ms, application-code: 32ms)
+ GET /signup?email=testuser%40example.com&password=password123 200 in 39ms (next.js: 2ms, proxy.ts: 4ms, application-code: 34ms)
+ GET / 200 in 72ms (next.js: 2ms, proxy.ts: 3ms, application-code: 66ms)
+ GET /login 200 in 526ms (next.js: 460ms, proxy.ts: 4ms, application-code: 62ms)
+ GET /login 200 in 48ms (next.js: 5ms, proxy.ts: 2ms, application-code: 41ms)
+ GET /signup 200 in 42ms (next.js: 2ms, proxy.ts: 5ms, application-code: 34ms)
+ GET /login 200 in 33ms (next.js: 2ms, proxy.ts: 2ms, application-code: 29ms)
+ GET /signup 200 in 36ms (next.js: 2ms, proxy.ts: 2ms, application-code: 32ms)
+ GET /signup 200 in 35ms (next.js: 1965µs, proxy.ts: 3ms, application-code: 30ms)
+ GET /login 200 in 34ms (next.js: 3ms, proxy.ts: 3ms, application-code: 28ms)
+ GET /signup 200 in 38ms (next.js: 5ms, proxy.ts: 2ms, application-code: 32ms)
+ GET /signup 200 in 35ms (next.js: 1891µs, proxy.ts: 2ms, application-code: 31ms)
+ GET /login 200 in 39ms (next.js: 5ms, proxy.ts: 2ms, application-code: 32ms)
+⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://169.254.0.21:3000
+- Environments: .env
+✓ Ready in 262ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+Signup error: Error [PrismaClientKnownRequestError]: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].user.findUnique()` invocation in
+/home/agent-engineer/indieaxis/.next/dev/server/chunks/[root-of-the-server]__0yn_vpd._.js:119:171
+
+  116         status: 400
+  117     });
+  118 }
+→ 119 const existingUser = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].user.findUnique(
+Can't reach database server at 127.0.0.1:51214
+    at <unknown> (src/app/api/auth/signup/route.ts:18:44)
+    at <unknown> (Can't reach database server at 127.0.0.1:51214)
+    at async POST (src/app/api/auth/signup/route.ts:18:26)
+  16 |     }
+  17 |
+> 18 |     const existingUser = await prisma.user.findUnique({
+     |                                            ^
+  19 |       where: { email },
+  20 |     })
+  21 | {
+  code: 'P1001',
+  meta: {
+    modelName: 'User',
+    driverAdapterError: Error [DriverAdapterError]: DatabaseNotReachable
+        at ignore-listed frames {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.8.0'
+}
+ POST /api/auth/signup 500 in 811ms (next.js: 335ms, proxy.ts: 66ms, application-code: 410ms)
+Signup error: Error [PrismaClientKnownRequestError]: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].user.findUnique()` invocation in
+/home/agent-engineer/indieaxis/.next/dev/server/chunks/[root-of-the-server]__0yn_vpd._.js:119:171
+
+  116         status: 400
+  117     });
+  118 }
+→ 119 const existingUser = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].user.findUnique(
+Can't reach database server at 127.0.0.1:51214
+    at <unknown> (src/app/api/auth/signup/route.ts:18:44)
+    at <unknown> (Can't reach database server at 127.0.0.1:51214)
+    at async POST (src/app/api/auth/signup/route.ts:18:26)
+  16 |     }
+  17 |
+> 18 |     const existingUser = await prisma.user.findUnique({
+     |                                            ^
+  19 |       where: { email },
+  20 |     })
+  21 | {
+  code: 'P1001',
+  meta: {
+    modelName: 'User',
+    driverAdapterError: Error [DriverAdapterError]: DatabaseNotReachable
+        at ignore-listed frames {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.8.0'
+}
+ POST /api/auth/signup 500 in 186ms (next.js: 3ms, proxy.ts: 8ms, application-code: 175ms)
+[browser] Uncaught Error: Internal Next.js error: Router action dispatched before initialization.
+[browser] Uncaught Error: Internal Next.js error: Router action dispatched before initialization.
+[browser] Uncaught Error: Internal Next.js error: Router action dispatched before initialization.
+ GET / 200 in 689ms (next.js: 321ms, proxy.ts: 27ms, application-code: 341ms)
+ GET / 200 in 71ms (next.js: 3ms, proxy.ts: 4ms, application-code: 65ms)
+ GET / 200 in 75ms (next.js: 2ms, proxy.ts: 3ms, application-code: 69ms)
+⚠ Blocked cross-origin request to Next.js dev resource /__nextjs_font/geist-latin.woff2 from "3000-i3cra1d1e6w8b9f22snyc.e2b.app".
+Cross-origin access to Next.js dev resources is blocked by default for safety.
+
+To allow this host in development, add it to "allowedDevOrigins" in next.config.js and restart the dev server:
+
+// next.config.js
+module.exports = {
+  allowedDevOrigins: ['3000-i3cra1d1e6w8b9f22snyc.e2b.app'],
+}
+
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+⚠ Blocked cross-origin request to Next.js dev resource /_next/webpack-hmr from "3000-i3cra1d1e6w8b9f22snyc.e2b.app".
+Cross-origin access to Next.js dev resources is blocked by default for safety.
+
+To allow this host in development, add it to "allowedDevOrigins" in next.config.js and restart the dev server:
+
+// next.config.js
+module.exports = {
+  allowedDevOrigins: ['3000-i3cra1d1e6w8b9f22snyc.e2b.app'],
+}
+
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ GET /signup 200 in 85ms (next.js: 21ms, proxy.ts: 3ms, application-code: 61ms)
+ GET /signup 200 in 42ms (next.js: 3ms, proxy.ts: 4ms, application-code: 35ms)
+⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://169.254.0.21:3000
+- Environments: .env
+✓ Ready in 241ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+  Reload env: .env
+[browser] Uncaught Error: Internal Next.js error: Router action dispatched before initialization.
