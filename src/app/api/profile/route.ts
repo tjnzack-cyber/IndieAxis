@@ -3,9 +3,7 @@ import prisma from '@/lib/prisma';
 
 export async function GET(request: Request) {
   try {
-    // For now, we'll fetch a hardcoded artist since auth isn't fully implemented
-    // In a real app, this would be based on the session user
-    const artist = await prisma.artistProfile.findFirst({
+    let artist = await prisma.artistProfile.findFirst({
       include: {
         user: true,
         epks: true,
@@ -27,32 +25,32 @@ export async function GET(request: Request) {
     });
 
     if (!artist) {
-      return NextResponse.json({ error: 'Artist not found' }, { status: 404 });
-    }
-
-    // Lazy trial expiration check
-    if (artist.user.subscriptionStatus === 'PREMIUM' && artist.user.trialEndsAt) {
-      if (new Date(artist.user.trialEndsAt) < new Date()) {
-        // Check if there's a successful payment
-        const successfulPayment = await prisma.payment.findFirst({
-          where: {
-            userId: artist.user.id,
-            status: 'COMPLETED'
-          }
-        });
-
-        if (!successfulPayment) {
-          await prisma.user.update({
-            where: { id: artist.user.id },
-            data: { 
-              subscriptionStatus: 'FREE',
-              trialEndsAt: null
-            }
-          });
-          artist.user.subscriptionStatus = 'FREE';
-          artist.user.trialEndsAt = null;
-        }
+      const user = await prisma.user.findFirst();
+      if (!user) {
+        return NextResponse.json({ error: 'No user found' }, { status: 404 });
       }
+      artist = await prisma.artistProfile.create({
+        data: {
+          userId: user.id,
+          name: user.name || 'Artist',
+          bio: '',
+          genre: '',
+          location: '',
+          socialLinks: {},
+        },
+        include: {
+          user: true,
+          epks: true,
+          marketingPlans: {
+            include: {
+              tasks: { orderBy: { order: 'asc' } }
+            }
+          },
+          gigApplications: {
+            include: { gig: true }
+          }
+        }
+      });
     }
 
     return NextResponse.json(artist);
@@ -61,7 +59,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
-
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
