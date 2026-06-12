@@ -37,7 +37,7 @@ export default function MarketingPage() {
       <div className="max-w-4xl mx-auto space-y-8">
         <header>
           <Link
-            href="/dashboard/profile"
+            href="/dashboard/hub"
             className="inline-flex items-center gap-2 text-zinc-400 hover:text-pink-400 transition-colors mb-4"
           >
             <ChevronLeft size={20} />
