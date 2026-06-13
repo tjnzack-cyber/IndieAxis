@@ -34,8 +34,15 @@ export default function ArtistDashboard() {
   }, []);
 
   if (loading) return <div className="p-8 text-center text-white">Loading your dashboard...</div>;
-  if (!artist) return <div className="p-8 text-center text-white">Artist profile not found.</div>;
-
+ if (!artist) return (
+  <div className="p-8 text-center text-white min-h-screen bg-[#0b0b1a] flex flex-col items-center justify-center">
+    <h2 className="text-2xl font-bold mb-2">Welcome to IndieAxis!</h2>
+    <p className="text-zinc-400 mb-6">Let's set up your artist profile to get started.</p>
+    <a href="/dashboard/marketing" className="px-6 py-3 bg-gradient-to-r from-[#6c5ce7] to-pink-500 text-white rounded-lg font-bold">
+      Start with Marketing Plan
+    </a>
+  </div>
+);
   const activePlan = artist.marketingPlans.find(p => p.status === 'ACTIVE') || artist.marketingPlans[0];
 
   const trialDaysLeft = artist.user.trialEndsAt ? Math.ceil((new Date(artist.user.trialEndsAt).getTime() - new Date().getTime()) / (1000 * 3600 * 24)) : 0;
