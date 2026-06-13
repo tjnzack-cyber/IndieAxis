@@ -32,7 +32,7 @@ export async function GET(request: Request) {
       artist = await prisma.artistProfile.create({
         data: {
           userId: user.id,
-          name: user.name || 'Artist',
+          name: 'Artist',
           bio: '',
           genre: '',
           location: '',
