@@ -8,13 +8,18 @@ import { cn } from '@/lib/utils';
 export default function BottomNav() {
   const pathname = usePathname();
 
-  const navItems = [
+const navItems = [
     { label: 'Home', icon: Home, href: '/dashboard/profile' },
     { label: 'Strategy', icon: Calendar, href: '/dashboard/marketing' },
     { label: 'Gigs', icon: Music, href: '/dashboard/opportunities' },
     { label: 'EPK', icon: FileText, href: '/dashboard/epk' },
     { label: 'Hub', icon: Sparkles, href: '/dashboard/hub' },
   ];
+
+  const handleLogout = async () => {
+    await fetch('/api/auth/signout', { method: 'POST' });
+    window.location.href = '/login';
+  };
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-[#0b0b1a]/90 backdrop-blur-lg border-t border-purple-500/20 px-4 py-3 z-50">
