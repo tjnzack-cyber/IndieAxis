@@ -106,7 +106,7 @@ export async function submitPesapalOrder(order: PesapalOrderRequest): Promise<Pe
       amount: order.amount,
       description: order.description,
       callback_url: order.callbackUrl,
-      notification_id: process.env.PESAPAL_IPN_ID,
+      notification_id: undefined,
       billing_address: {
         email_address: order.billingEmail,
         country_code: order.countryCode || 'KE',
