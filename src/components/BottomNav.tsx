@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Calendar, Music, FileText, Sparkles } from 'lucide-react';
+import { Home, Calendar, Music, FileText, Sparkles, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function BottomNav() {
