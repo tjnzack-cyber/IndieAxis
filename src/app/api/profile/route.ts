@@ -97,3 +97,12 @@ export async function PUT(request: Request) {
     const updatedArtist = await prisma.artistProfile.update({
       where: { id: artist.id },
       data: { name, bio, genre, location,
+socialLinks, profileImageUrl }
+    });
+
+    return NextResponse.json(updatedArtist);
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
