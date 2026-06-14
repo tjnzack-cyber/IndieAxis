@@ -1,18 +1,20 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Camera } from 'lucide-react';
 import Link from 'next/link';
 
 export default function EditProfilePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState({
     name: '',
     bio: '',
     genre: '',
     location: '',
+    profileImageUrl: '',
   });
 
   useEffect(() => {
@@ -24,11 +26,29 @@ export default function EditProfilePage() {
           bio: data.bio || '',
           genre: data.genre || '',
           location: data.location || '',
+          profileImageUrl: data.profileImageUrl || '',
         });
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, []);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    });
+    const data = await res.json();
+    if (data.url) {
+      setForm(prev => ({ ...prev, profileImageUrl: data.url }));
+    }
+    setUploading(false);
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -58,6 +78,22 @@ export default function EditProfilePage() {
           <h1 className="text-4xl font-black text-white">Edit Profile</h1>
           <p className="text-zinc-500 mt-1">Update your artist information</p>
         </header>
+
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative w-32 h-32 rounded-full overflow-hidden bg-zinc-800 border-2 border-purple-500/30">
+            {form.profileImageUrl ? (
+              <img src={form.profileImageUrl} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-zinc-500">
+                <Camera size={32} />
+              </div>
+            )}
+          </div>
+          <label className="cursor-pointer px-4 py-2 bg-zinc-800 text-zinc-300 rounded-lg border border-purple-500/20 hover:border-pink-500 transition-all text-sm font-bold">
+            {uploading ? 'Uploading...' : 'Upload Profile Picture'}
+            <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+          </label>
+        </div>
 
         <div className="space-y-4">
           <div>
