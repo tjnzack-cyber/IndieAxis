@@ -100,7 +100,14 @@ export default function ArtistDashboard() {
           >
             <Bell size={18} />
             <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-cyan-500 rounded-full border-2 border-white dark:border-zinc-900" />
-          </button>
+          </button> 
+          <button
+  onClick={() => window.location.href = '/dashboard/profile/edit'}
+  className="px-4 py-2 bg-gradient-to-r from-[#6c5ce7] to-pink-500 text-white text-sm font-bold rounded-lg hover:opacity-90 transition-all flex items-center gap-2"
+>
+  <Edit2 size={16} />
+  Edit Profile
+</button>
         </div>
       </header>
 
