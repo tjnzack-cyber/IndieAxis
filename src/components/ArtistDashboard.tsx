@@ -119,13 +119,24 @@ export default function ArtistDashboard() {
 
       <div className="p-4 md:p-8 grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-6">
         {/* Stats */}
-        <div className="bg-indigo-600 p-4 md:p-6 rounded-xl text-white shadow-lg">
-          <div className="flex items-center gap-2 mb-1 md:mb-2 opacity-80 text-[10px] md:text-sm uppercase tracking-wider font-bold">
-            <BarChart3 size={14} />
-            Listeners
-          </div>
-          <h3 className="text-2xl md:text-4xl font-black italic">12.4K</h3>
-        </div>
+       <div className="bg-indigo-600 p-4 md:p-6 rounded-xl text-white shadow-lg">
+  <div className="flex items-center gap-2 mb-1 md:mb-2 opacity-80 text-[10px] md:text-sm uppercase tracking-wider font-bold">
+    <BarChart3 size={14} />
+    Spotify Listeners
+  </div>
+  <h3 className="text-2xl md:text-4xl font-black italic">
+    {(artist.socialLinks as any)?.spotifyListeners || '—'}
+  </h3>
+</div>
+<div className="bg-violet-500 p-4 md:p-6 rounded-xl text-white shadow-lg">
+  <div className="flex items-center gap-2 mb-1 md:mb-2 opacity-80 text-[10px] md:text-sm uppercase tracking-wider font-bold">
+    <Share2 size={14} />
+    Instagram Followers
+  </div>
+  <h3 className="text-2xl md:text-4xl font-black italic">
+    {(artist.socialLinks as any)?.instagramFollowers || '—'}
+  </h3>
+</div>
         <div className="bg-violet-500 p-4 md:p-6 rounded-xl text-white shadow-lg">
           <div className="flex items-center gap-2 mb-1 md:mb-2 opacity-80 text-[10px] md:text-sm uppercase tracking-wider font-bold">
             <Share2 size={14} />
