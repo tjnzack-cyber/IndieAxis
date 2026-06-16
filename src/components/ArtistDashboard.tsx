@@ -142,7 +142,7 @@ export default function ArtistDashboard() {
             <Share2 size={14} />
             Reach
           </div>
-          <h3 className="text-2xl md:text-4xl font-black italic">5.2K</h3>
+          <h3 className="text-2xl md:text-4xl font-black italic">{(artist.socialLinks as any)?.tiktokFollowers || '—'}</h3>
         </div>
 
         {/* Marketing Plan */}
