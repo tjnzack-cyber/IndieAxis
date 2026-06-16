@@ -48,6 +48,14 @@ body {
 .light .bg-\[\#0b0b1a\] {
   background: linear-gradient(135deg, #f0f0f5 0%, #e8e8f0 50%, #f5f5ff 100%) !important;
 }
+.light body {
+  background: linear-gradient(135deg, #e8e8f0 0%, #f0f0f8 50%, #ebebf5 100%) !important;
+  min-height: 100vh;
+}
+
+.light .bg-zinc-950 {
+  background: transparent !important;
+}
 }
 
 .light .bg-zinc-950 {
