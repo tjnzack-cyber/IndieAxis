@@ -1,12 +1,14 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Calendar, Music, FileText, Sparkles, LogOut } from 'lucide-react';
+import { Home, Calendar, Music, FileText, Sparkles, LogOut, Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTheme } from '@/components/ThemeProvider';
 
 export default function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
+  const { theme, toggleTheme } = useTheme();
 
   const navItems = [
     { label: 'Home', icon: Home, href: '/dashboard/profile' },
@@ -28,7 +30,7 @@ export default function BottomNav() {
   return (
     <>
       <div className="h-20" />
-      <nav className="fixed bottom-0 left-0 right-0 bg-[#0b0b1a]/95 backdrop-blur-lg border-t border-purple-500/20 px-2 py-3 z-50">
+      <nav className="fixed bottom-0 left-0 right-0 bg-[#0b0b1a]/95 dark:bg-[#0b0b1a]/95 light:bg-white/95 backdrop-blur-lg border-t border-purple-500/20 px-2 py-3 z-50">
         <div className="flex justify-between items-center max-w-lg mx-auto">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
@@ -49,6 +51,17 @@ export default function BottomNav() {
               </Link>
             );
           })}
+
+          <button
+            onClick={toggleTheme}
+            className="flex flex-col items-center gap-1 text-zinc-500 hover:text-yellow-400 transition-colors px-2"
+          >
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            <span className="text-[9px] font-bold uppercase tracking-wider">
+              {theme === 'dark' ? 'Light' : 'Dark'}
+            </span>
+          </button>
+
           <button
             onClick={handleLogout}
             className="flex flex-col items-center gap-1 text-zinc-500 hover:text-red-400 transition-colors px-2"
