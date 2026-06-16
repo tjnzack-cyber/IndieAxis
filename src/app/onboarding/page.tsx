@@ -1,12 +1,14 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Music, MapPin, Target, ChevronRight, ChevronLeft } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Search, CheckCircle, AlertCircle } from 'lucide-react';
 
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [looking, setLooking] = useState(false);
+  const [lookupResult, setLookupResult] = useState<any>(null);
   const [form, setForm] = useState({
     name: '',
     genre: '',
@@ -22,6 +24,33 @@ export default function OnboardingPage() {
 
   const update = (field: string, value: string) =>
     setForm(prev => ({ ...prev, [field]: value }));
+
+  const handleLookup = async () => {
+    setLooking(true);
+    setLookupResult(null);
+    try {
+      const res = await fetch('/api/artist-lookup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ artistName: form.name, location: form.location }),
+      });
+      const data = await res.json();
+      setLookupResult(data);
+      if (data.found) {
+        setForm(prev => ({
+          ...prev,
+          spotifyListeners: data.spotifyListeners?.toString() || '',
+          instagramFollowers: data.instagramFollowers?.toString() || '',
+          tiktokFollowers: data.tiktokFollowers?.toString() || '',
+          youtubeSubscribers: data.youtubeSubscribers?.toString() || '',
+          soundcloudPlays: data.soundcloudPlays?.toString() || '',
+        }));
+      }
+    } catch (e) {
+      setLookupResult({ found: false });
+    }
+    setLooking(false);
+  };
 
   const handleFinish = async () => {
     setLoading(true);
@@ -146,7 +175,7 @@ export default function OnboardingPage() {
                 <ChevronLeft size={18} /> Back
               </button>
               <button
-                onClick={() => setStep(3)}
+                onClick={() => { setStep(3); handleLookup(); }}
                 disabled={!form.goals}
                 className="flex-1 py-3 bg-gradient-to-r from-[#6c5ce7] to-pink-500 text-white font-black rounded-lg hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
               >
@@ -156,13 +185,36 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* Step 3 — Streaming Stats */}
+        {/* Step 3 — AI Stats Lookup */}
         {step === 3 && (
           <div className="space-y-6">
             <div>
               <h1 className="text-3xl font-black text-white mb-1">Your Numbers 📊</h1>
-              <p className="text-zinc-400">Add your current stats so we can personalize your strategy. All optional.</p>
+              <p className="text-zinc-400">We searched for your stats automatically. Review and correct if needed.</p>
             </div>
+
+            {/* Lookup Status */}
+            {looking && (
+              <div className="flex items-center gap-3 p-4 bg-zinc-800 rounded-lg">
+                <Search size={18} className="text-pink-400 animate-pulse" />
+                <span className="text-zinc-300 text-sm">Searching for {form.name} across platforms...</span>
+              </div>
+            )}
+
+            {!looking && lookupResult?.found && (
+              <div className="flex items-center gap-3 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+                <CheckCircle size={18} className="text-green-400" />
+                <span className="text-green-300 text-sm">We found stats for {form.name}! Review and correct below.</span>
+              </div>
+            )}
+
+            {!looking && lookupResult && !lookupResult.found && (
+              <div className="flex items-center gap-3 p-4 bg-zinc-800 border border-zinc-700 rounded-lg">
+                <AlertCircle size={18} className="text-zinc-400" />
+                <span className="text-zinc-300 text-sm">We couldn't find {form.name} online yet. Enter your stats manually below.</span>
+              </div>
+            )}
+
             <div className="space-y-4">
               {[
                 { label: 'Spotify Monthly Listeners', field: 'spotifyListeners', placeholder: 'e.g. 1200' },
@@ -183,6 +235,7 @@ export default function OnboardingPage() {
                 </div>
               ))}
             </div>
+
             <div className="flex gap-3">
               <button
                 onClick={() => setStep(2)}
