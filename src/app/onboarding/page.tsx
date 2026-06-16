@@ -1,330 +1,207 @@
 'use client';
-
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { 
-  ChevronRight, 
-  Music, 
-  MapPin, 
-  BarChart3, 
-  Rocket, 
-  CheckCircle2, 
-  Sparkles,
-  Guitar,
-  TrendingUp,
-  CircleDollarSign,
-  Mail,
-  ArrowRight
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Music, MapPin, Target, ChevronRight, ChevronLeft } from 'lucide-react';
 
 export default function OnboardingPage() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    genre: 'Afrobeat',
+  const [form, setForm] = useState({
+    name: '',
+    genre: '',
     location: '',
-    listeners: '0 - 500',
-    goal: 'Release my first single'
+    careerStage: 'Emerging (0-2 years)',
+    goals: '',
+    spotifyListeners: '',
+    instagramFollowers: '',
+    tiktokFollowers: '',
+    youtubeSubscribers: '',
+    soundcloudPlays: '',
   });
-  const { data: session, status } = useSession();
-  const router = useRouter();
 
-  useEffect(() => {
-    if (status === 'authenticated' && step === 1) {
-      setStep(2);
-    }
-  }, [status, step]);
+  const update = (field: string, value: string) =>
+    setForm(prev => ({ ...prev, [field]: value }));
 
-  const nextStep = () => setStep(s => Math.min(s + 1, 4));
-  const prevStep = () => setStep(s => Math.max(s - 1, 1));
-
-  const handleStartTrial = async () => {
+  const handleFinish = async () => {
     setLoading(true);
-    try {
-      // Create user first
-      const email = session?.user?.email; 
-      const onboardRes = await fetch('/api/auth/onboard', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          genre: formData.genre,
-          location: formData.location
-        })
-      });
-      const onboardData = await onboardRes.json();
-      
-      // Now start trial
-      if (onboardData.user) {
-        await fetch('/api/trial/start', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: onboardData.user.id })
-        });
-      }
-      
-      router.push('/dashboard');
-    } catch (error) {
-      console.error('Failed to start trial:', error);
-      router.push('/dashboard');
-    } finally {
-      setLoading(false);
-    }
+    await fetch('/api/profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: form.name,
+        genre: form.genre,
+        location: form.location,
+        bio: `Career Stage: ${form.careerStage}. Goals: ${form.goals}`,
+        socialLinks: {
+          spotifyListeners: form.spotifyListeners,
+          instagramFollowers: form.instagramFollowers,
+          tiktokFollowers: form.tiktokFollowers,
+          youtubeSubscribers: form.youtubeSubscribers,
+          soundcloudPlays: form.soundcloudPlays,
+        },
+      }),
+    });
+    setLoading(false);
+    router.push('/dashboard/marketing');
   };
-
-  const handleSkipTrial = async () => {
-    setLoading(true);
-    try {
-      const email = session?.user?.email; 
-      await fetch('/api/auth/onboard', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          genre: formData.genre,
-          location: formData.location
-        })
-      });
-      router.push('/dashboard');
-    } catch (error) {
-      console.error('Failed to skip trial:', error);
-      router.push('/dashboard');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const genres = ['Afrobeat', 'Hip-Hop', 'Indie Pop', 'R&B', 'Electronic', 'Alternative'];
-  const listenerRanges = ['0 - 500', '500 - 5,000', '5,000 - 20,000', '20,000+'];
-  const goals = [
-    { id: 'Release my first single', icon: <Rocket size={24} />, text: 'Release my first single' },
-    { id: 'Book more local gigs', icon: <Guitar size={24} />, text: 'Book more local gigs' },
-    { id: 'Grow my social following', icon: <TrendingUp size={24} />, text: 'Grow my social following' },
-    { id: 'Secure funding/grants', icon: <CircleDollarSign size={24} />, text: 'Secure funding/grants' },
-  ];
 
   return (
-    <div className="min-h-screen bg-[#0f0c29] text-white flex flex-col items-center justify-center p-6 selection:bg-cyan-500/30 selection:text-cyan-200">
-      <div className="w-full max-w-md bg-[#1a1a2e] border border-white/5 rounded-[40px] overflow-hidden shadow-2xl flex flex-col relative aspect-[9/19] max-h-[812px]">
-        
-        {/* Step 1: Welcome */}
-        <div className={cn("flex-1 flex flex-col p-8 transition-all duration-500", step === 1 ? "opacity-100 translate-x-0" : "opacity-0 absolute inset-0 pointer-events-none -translate-x-full")}>
-          <div className="flex-1 flex flex-col items-center justify-center text-center space-y-8">
-            <div className="w-20 h-20 bg-gradient-to-tr from-indigo-600 to-cyan-400 rounded-3xl flex items-center justify-center text-3xl font-black shadow-2xl shadow-indigo-600/40">
-              IA
+    <div className="min-h-screen bg-[#0b0b1a] flex items-center justify-center p-4">
+      <div className="w-full max-w-lg">
+
+        {/* Progress Bar */}
+        <div className="flex gap-2 mb-8">
+          {[1, 2, 3].map(s => (
+            <div key={s} className={`h-1.5 flex-1 rounded-full transition-all ${s <= step ? 'bg-gradient-to-r from-[#6c5ce7] to-pink-500' : 'bg-zinc-800'}`} />
+          ))}
+        </div>
+
+        {/* Step 1 — Basic Info */}
+        {step === 1 && (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-black text-white mb-1">Welcome to IndieAxis! 🎵</h1>
+              <p className="text-zinc-400">Let's set up your artist profile. This takes 2 minutes.</p>
             </div>
             <div className="space-y-4">
-              <h1 className="text-4xl font-black tracking-tight text-cyan-400">Welcome to IndieAxis</h1>
-              <p className="text-zinc-400 text-lg leading-relaxed px-4">
-                The mini-manager in your pocket. Let's build your strategy.
-              </p>
+              <div>
+                <label className="block text-sm font-bold text-zinc-400 mb-2">Your Artist Name</label>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={e => update('name', e.target.value)}
+                  placeholder="e.g. Zack Eli"
+                  className="w-full bg-zinc-800 text-white rounded-lg px-4 py-3 border border-purple-500/20 focus:border-pink-500 outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-zinc-400 mb-2">Your Genre(s)</label>
+                <input
+                  type="text"
+                  value={form.genre}
+                  onChange={e => update('genre', e.target.value)}
+                  placeholder="e.g. RnB, Soul, Afro-Pop"
+                  className="w-full bg-zinc-800 text-white rounded-lg px-4 py-3 border border-purple-500/20 focus:border-pink-500 outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-zinc-400 mb-2">Your Location</label>
+                <input
+                  type="text"
+                  value={form.location}
+                  onChange={e => update('location', e.target.value)}
+                  placeholder="e.g. Lusaka, Zambia"
+                  className="w-full bg-zinc-800 text-white rounded-lg px-4 py-3 border border-purple-500/20 focus:border-pink-500 outline-none"
+                />
+              </div>
             </div>
+            <button
+              onClick={() => setStep(2)}
+              disabled={!form.name || !form.genre || !form.location}
+              className="w-full py-3 bg-gradient-to-r from-[#6c5ce7] to-pink-500 text-white font-black rounded-lg hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+            >
+              Next <ChevronRight size={18} />
+            </button>
           </div>
-          <div className="space-y-4 pb-8">
-            <button 
-              onClick={nextStep}
-              className="w-full flex items-center justify-center gap-3 bg-white text-black h-16 rounded-2xl font-bold hover:bg-zinc-200 transition-colors"
-            >
-              <div className="w-6 h-6 rounded-full border border-black/10 flex items-center justify-center text-[10px]">G</div>
-              Continue with Google
-            </button>
-            <button 
-              onClick={nextStep}
-              className="w-full flex items-center justify-center gap-3 bg-white/5 border border-white/10 h-16 rounded-2xl font-bold hover:bg-white/10 transition-colors"
-            >
-              <Mail size={20} />
-              Create Account
-            </button>
-            <div className="text-center pt-4">
-              <button 
-                onClick={() => router.push('/login')}
-                className="text-zinc-500 text-sm font-medium hover:text-cyan-400 transition-colors"
+        )}
+
+        {/* Step 2 — Career Info */}
+        {step === 2 && (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-black text-white mb-1">Your Career 🚀</h1>
+              <p className="text-zinc-400">Tell us where you are and where you want to go.</p>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-zinc-400 mb-2">Career Stage</label>
+                <select
+                  value={form.careerStage}
+                  onChange={e => update('careerStage', e.target.value)}
+                  className="w-full bg-zinc-800 text-white rounded-lg px-4 py-3 border border-purple-500/20 focus:border-pink-500 outline-none"
+                >
+                  <option>Emerging (0-2 years)</option>
+                  <option>Developing (2-5 years)</option>
+                  <option>Established (5+ years)</option>
+                  <option>Professional (Full-time artist)</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-zinc-400 mb-2">Your Main Goals</label>
+                <textarea
+                  value={form.goals}
+                  onChange={e => update('goals', e.target.value)}
+                  rows={3}
+                  placeholder="e.g. Gain 5K Spotify listeners, book 2 gigs per month, get playlist features"
+                  className="w-full bg-zinc-800 text-white rounded-lg px-4 py-3 border border-purple-500/20 focus:border-pink-500 outline-none"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setStep(1)}
+                className="px-6 py-3 bg-zinc-800 text-zinc-300 font-bold rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
               >
-                Already have an account? <span className="text-cyan-400 font-bold">Log In</span>
+                <ChevronLeft size={18} /> Back
+              </button>
+              <button
+                onClick={() => setStep(3)}
+                disabled={!form.goals}
+                className="flex-1 py-3 bg-gradient-to-r from-[#6c5ce7] to-pink-500 text-white font-black rounded-lg hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+              >
+                Next <ChevronRight size={18} />
               </button>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Step 2: Profile */}
-        <div className={cn("flex-1 flex flex-col p-8 transition-all duration-500", step === 2 ? "opacity-100 translate-x-0" : "opacity-0 absolute inset-0 pointer-events-none translate-x-full")}>
-          <Progress step={1} />
-          <div className="flex-1 space-y-10">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-black text-cyan-400">About Your Music</h2>
-              <p className="text-zinc-400">Help us personalize your dashboard.</p>
+        {/* Step 3 — Streaming Stats */}
+        {step === 3 && (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-black text-white mb-1">Your Numbers 📊</h1>
+              <p className="text-zinc-400">Add your current stats so we can personalize your strategy. All optional.</p>
             </div>
-
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-widest text-indigo-400 flex items-center gap-2">
-                  <Music size={12} />
-                  Primary Genre
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {genres.map(g => (
-                    <button
-                      key={g}
-                      onClick={() => setFormData({ ...formData, genre: g })}
-                      className={cn(
-                        "px-4 py-2.5 rounded-full text-sm font-bold border transition-all",
-                        formData.genre === g 
-                          ? "bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-600/30" 
-                          : "bg-white/5 border-white/10 text-zinc-400 hover:border-white/20"
-                      )}
-                    >
-                      {g}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-widest text-indigo-400 flex items-center gap-2">
-                  <MapPin size={12} />
-                  Where are you based?
-                </label>
-                <input 
-                  type="text" 
-                  placeholder="e.g. London, UK"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-5 text-white placeholder:text-zinc-600 focus:outline-none focus:border-cyan-400/50 transition-colors"
-                />
-              </div>
-
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-widest text-indigo-400 flex items-center gap-2">
-                  <BarChart3 size={12} />
-                  Monthly Listeners
-                </label>
-                <select 
-                  value={formData.listeners}
-                  onChange={(e) => setFormData({ ...formData, listeners: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl h-14 px-5 text-white focus:outline-none focus:border-cyan-400/50 transition-colors appearance-none"
-                >
-                  {listenerRanges.map(r => <option key={r} value={r} className="bg-[#1a1a2e]">{r}</option>)}
-                </select>
-              </div>
-            </div>
-          </div>
-          <div className="pt-8 pb-8">
-            <button 
-              onClick={nextStep}
-              className="w-full bg-indigo-600 h-16 rounded-2xl font-black text-lg hover:bg-indigo-500 transition-colors shadow-xl shadow-indigo-600/30"
-            >
-              Next
-            </button>
-          </div>
-        </div>
-
-        {/* Step 3: Goals */}
-        <div className={cn("flex-1 flex flex-col p-8 transition-all duration-500", step === 3 ? "opacity-100 translate-x-0" : "opacity-0 absolute inset-0 pointer-events-none translate-x-full")}>
-          <Progress step={2} />
-          <div className="flex-1 space-y-10">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-black text-cyan-400">What's your goal?</h2>
-              <p className="text-zinc-400">Pick one to focus your strategy.</p>
-            </div>
-
             <div className="space-y-4">
-              {goals.map(g => (
-                <button
-                  key={g.id}
-                  onClick={() => setFormData({ ...formData, goal: g.id })}
-                  className={cn(
-                    "w-full flex items-center gap-5 p-5 rounded-3xl border transition-all text-left",
-                    formData.goal === g.id 
-                      ? "bg-cyan-400/5 border-cyan-400/50" 
-                      : "bg-white/5 border-white/5 hover:border-white/20"
-                  )}
-                >
-                  <div className={cn(
-                    "w-12 h-12 rounded-2xl flex items-center justify-center transition-colors",
-                    formData.goal === g.id ? "bg-cyan-400 text-[#0b0b1a]" : "bg-[#0b0b1a] text-zinc-500"
-                  )}>
-                    {g.icon}
-                  </div>
-                  <span className={cn("font-bold text-lg", formData.goal === g.id ? "text-white" : "text-zinc-400")}>
-                    {g.text}
-                  </span>
-                </button>
+              {[
+                { label: 'Spotify Monthly Listeners', field: 'spotifyListeners', placeholder: 'e.g. 1200' },
+                { label: 'Instagram Followers', field: 'instagramFollowers', placeholder: 'e.g. 3500' },
+                { label: 'TikTok Followers', field: 'tiktokFollowers', placeholder: 'e.g. 800' },
+                { label: 'YouTube Subscribers', field: 'youtubeSubscribers', placeholder: 'e.g. 450' },
+                { label: 'SoundCloud Plays', field: 'soundcloudPlays', placeholder: 'e.g. 2000' },
+              ].map(item => (
+                <div key={item.field}>
+                  <label className="block text-sm font-bold text-zinc-400 mb-2">{item.label}</label>
+                  <input
+                    type="number"
+                    value={form[item.field as keyof typeof form]}
+                    onChange={e => update(item.field, e.target.value)}
+                    placeholder={item.placeholder}
+                    className="w-full bg-zinc-800 text-white rounded-lg px-4 py-3 border border-purple-500/20 focus:border-pink-500 outline-none"
+                  />
+                </div>
               ))}
             </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setStep(2)}
+                className="px-6 py-3 bg-zinc-800 text-zinc-300 font-bold rounded-lg hover:bg-zinc-700 transition-all flex items-center gap-2"
+              >
+                <ChevronLeft size={18} /> Back
+              </button>
+              <button
+                onClick={handleFinish}
+                disabled={loading}
+                className="flex-1 py-3 bg-gradient-to-r from-[#6c5ce7] to-pink-500 text-white font-black rounded-lg hover:opacity-90 transition-all flex items-center justify-center gap-2"
+              >
+                {loading ? 'Setting up...' : 'Launch My Dashboard 🚀'}
+              </button>
+            </div>
           </div>
-          <div className="pt-8 pb-8">
-            <button 
-              onClick={nextStep}
-              className="w-full bg-indigo-600 h-16 rounded-2xl font-black text-lg hover:bg-indigo-50 transition-colors shadow-xl shadow-indigo-600/30"
-            >
-              Build My Plan
-            </button>
-          </div>
-        </div>
+        )}
 
-        {/* Step 4: Success */}
-        <div className={cn("flex-1 flex flex-col p-8 transition-all duration-500", step === 4 ? "opacity-100 translate-x-0" : "opacity-0 absolute inset-0 pointer-events-none translate-x-full")}>
-          <Progress step={3} />
-          <div className="flex-1 flex flex-col items-center justify-center text-center space-y-10">
-            <div className="w-24 h-24 bg-cyan-400/10 rounded-full flex items-center justify-center text-5xl animate-pulse">
-              ✨
-            </div>
-            <div className="space-y-4">
-              <h2 className="text-4xl font-black text-cyan-400">Strategy Ready!</h2>
-              <p className="text-zinc-400 text-lg">
-                Based on your goals, we've built your first marketing roadmap.
-              </p>
-            </div>
-
-            <div className="w-full p-6 bg-white/5 border border-white/10 rounded-[32px] text-left relative overflow-hidden group">
-              <div className="absolute top-0 left-0 w-1.5 h-full bg-cyan-400" />
-              <div className="space-y-3">
-                <div className="text-[10px] font-black uppercase tracking-widest text-indigo-400">First Task</div>
-                <h3 className="text-xl font-bold">Register with your local PRO</h3>
-                <p className="text-xs text-zinc-500 leading-relaxed">
-                  Secure your performance royalties before your release.
-                </p>
-              </div>
-              <div className="absolute top-6 right-6 text-zinc-800">
-                <CheckCircle2 size={32} />
-              </div>
-            </div>
-          </div>
-          <div className="pt-8 pb-8 space-y-4">
-            <button 
-              onClick={handleStartTrial}
-              disabled={loading}
-              className={cn(
-                "w-full flex items-center justify-center gap-3 bg-[#6c5ce7] h-16 rounded-2xl font-black text-white text-lg hover:bg-[#5b4bc4] transition-all shadow-xl shadow-[#6c5ce7]/30 animate-pulse",
-                loading && "opacity-50 cursor-not-allowed"
-              )}
-            >
-              {loading ? 'Building Strategy...' : 'Start My 7-Day Free Trial'}
-              {!loading && <ArrowRight size={20} />}
-            </button>
-            <button 
-              onClick={handleSkipTrial}
-              disabled={loading}
-              className="w-full text-zinc-500 font-bold hover:text-white transition-colors"
-            >
-              Maybe later, take me to dashboard
-            </button>
-          </div>
-        </div>
       </div>
-    </div>
-  );
-}
-
-function Progress({ step }: { step: number }) {
-  return (
-    <div className="w-full h-1 bg-white/5 rounded-full mb-12 overflow-hidden">
-      <div 
-        className="h-full bg-cyan-400 transition-all duration-500" 
-        style={{ width: `${(step / 3) * 100}%` }}
-      />
     </div>
   );
 }
