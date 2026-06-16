@@ -3,6 +3,11 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --card: #f4f4f5;
+  --card-border: #e4e4e7;
+  --nav-bg: rgba(255, 255, 255, 0.95);
+  --input-bg: #f4f4f5;
+  --text-muted: #71717a;
 }
 
 @theme inline {
@@ -12,15 +17,71 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #0b0b1a;
+  --foreground: #ededed;
+  --card: #18181b;
+  --card-border: #27272a;
+  --nav-bg: rgba(11, 11, 26, 0.95);
+  --input-bg: #27272a;
+  --text-muted: #a1a1aa;
+}
+
+.light {
+  --background: #ffffff;
+  --foreground: #171717;
+  --card: #f4f4f5;
+  --card-border: #e4e4e7;
+  --nav-bg: rgba(255, 255, 255, 0.95);
+  --input-bg: #f4f4f5;
+  --text-muted: #71717a;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Light mode overrides */
+.light .bg-\[\#0b0b1a\] {
+  background-color: #ffffff !important;
+}
+
+.light .bg-zinc-950 {
+  background-color: #fafafa !important;
+}
+
+.light .bg-zinc-800 {
+  background-color: #f4f4f5 !important;
+}
+
+.light .bg-zinc-800\/50 {
+  background-color: rgba(244, 244, 245, 0.5) !important;
+}
+
+.light .text-white {
+  color: #171717 !important;
+}
+
+.light .text-zinc-400 {
+  color: #52525b !important;
+}
+
+.light .text-zinc-500 {
+  color: #71717a !important;
+}
+
+.light .border-purple-500\/20 {
+  border-color: rgba(168, 85, 247, 0.3) !important;
+}
+
+.light .border-zinc-800 {
+  border-color: #e4e4e7 !important;
+}
+
+.light nav {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-color: #e4e4e7 !important;
 }
