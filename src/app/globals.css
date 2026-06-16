@@ -98,3 +98,34 @@ body {
 .light h1, .light h2, .light h3 {
   color: #1a1a2e !important;
 }
+.light input,
+.light textarea,
+.light select {
+  background-color: #ffffff !important;
+  color: #171717 !important;
+  border-color: #d4d4d8 !important;
+}
+
+.light .bg-\[\#080814\] {
+  background-color: #f4f4f5 !important;
+}
+
+.light .bg-\[\#0f0f1a\] {
+  background-color: #f4f4f5 !important;
+}
+
+.light label {
+  color: #52525b !important;
+}
+
+.light p {
+  color: #3f3f46 !important;
+}
+
+.light .text-zinc-600 {
+  color: #52525b !important;
+}
+
+.light .text-zinc-300 {
+  color: #3f3f46 !important;
+}
