@@ -7,6 +7,9 @@ import { Users, BarChart3, Rocket, MessageSquare, Share2, Edit2, ExternalLink, B
 
 import Link from 'next/link';
 import NotificationCenter from './NotificationCenter';
+import OpportunityTracker from './OpportunityTracker';
+import GoalTracker from './GoalTracker';
+import EPKEditor from './EPKEditor';
 
 interface ArtistProfileExtended extends ArtistProfile {
   user: User;
@@ -34,17 +37,17 @@ export default function ArtistDashboard() {
   }, []);
 
   if (loading) return <div className="p-8 text-center text-white">Loading your dashboard...</div>;
- if (!artist) return (
-  <div className="p-8 text-center text-white min-h-screen bg-[#0b0b1a] flex flex-col items-center justify-center">
-    <h2 className="text-2xl font-bold mb-2">Welcome to IndieAxis!</h2>
-    <p className="text-zinc-400 mb-6">Let's set up your artist profile to get started.</p>
-    <a href="/dashboard/marketing" className="px-6 py-3 bg-gradient-to-r from-[#6c5ce7] to-pink-500 text-white rounded-lg font-bold">
-      Start with Marketing Plan
-    </a>
-  </div>
-);
-  const activePlan = artist.marketingPlans.find(p => p.status === 'ACTIVE') || artist.marketingPlans[0];
+  if (!artist) return (
+    <div className="p-8 text-center text-white min-h-screen bg-[#0b0b1a] flex flex-col items-center justify-center">
+      <h2 className="text-2xl font-bold mb-2">Welcome to IndieAxis!</h2>
+      <p className="text-zinc-400 mb-6">Let's set up your artist profile to get started.</p>
+      <a href="/dashboard/marketing" className="px-6 py-3 bg-gradient-to-r from-[#6c5ce7] to-pink-500 text-white rounded-lg font-bold">
+        Start with Marketing Plan
+      </a>
+    </div>
+  );
 
+  const activePlan = artist.marketingPlans.find(p => p.status === 'ACTIVE') || artist.marketingPlans[0];
   const trialDaysLeft = artist.user.trialEndsAt ? Math.ceil((new Date(artist.user.trialEndsAt).getTime() - new Date().getTime()) / (1000 * 3600 * 24)) : 0;
 
   return (
@@ -94,20 +97,20 @@ export default function ArtistDashboard() {
           </div>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
-          <button 
+          <button
             onClick={() => setShowNotifications(!showNotifications)}
             className="p-2 md:p-2.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors relative"
           >
             <Bell size={18} />
             <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-cyan-500 rounded-full border-2 border-white dark:border-zinc-900" />
-          </button> 
+          </button>
           <button
-  onClick={() => window.location.href = '/dashboard/profile/edit'}
-  className="px-4 py-2 bg-gradient-to-r from-[#6c5ce7] to-pink-500 text-white text-sm font-bold rounded-lg hover:opacity-90 transition-all flex items-center gap-2"
->
-  <Edit2 size={16} />
-  Edit Profile
-</button>
+            onClick={() => window.location.href = '/dashboard/profile/edit'}
+            className="px-4 py-2 bg-gradient-to-r from-[#6c5ce7] to-pink-500 text-white text-sm font-bold rounded-lg hover:opacity-90 transition-all flex items-center gap-2"
+          >
+            <Edit2 size={16} />
+            Edit Profile
+          </button>
         </div>
       </header>
 
@@ -119,30 +122,32 @@ export default function ArtistDashboard() {
 
       <div className="p-4 md:p-8 grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-6">
         {/* Stats */}
-       <div className="bg-indigo-600 p-4 md:p-6 rounded-xl text-white shadow-lg">
-  <div className="flex items-center gap-2 mb-1 md:mb-2 opacity-80 text-[10px] md:text-sm uppercase tracking-wider font-bold">
-    <BarChart3 size={14} />
-    Spotify Listeners
-  </div>
-  <h3 className="text-2xl md:text-4xl font-black italic">
-    {(artist.socialLinks as any)?.spotifyListeners || '—'}
-  </h3>
-</div>
-<div className="bg-violet-500 p-4 md:p-6 rounded-xl text-white shadow-lg">
-  <div className="flex items-center gap-2 mb-1 md:mb-2 opacity-80 text-[10px] md:text-sm uppercase tracking-wider font-bold">
-    <Share2 size={14} />
-    Instagram Followers
-  </div>
-  <h3 className="text-2xl md:text-4xl font-black italic">
-    {(artist.socialLinks as any)?.instagramFollowers || '—'}
-  </h3>
-</div>
+        <div className="bg-indigo-600 p-4 md:p-6 rounded-xl text-white shadow-lg">
+          <div className="flex items-center gap-2 mb-1 md:mb-2 opacity-80 text-[10px] md:text-sm uppercase tracking-wider font-bold">
+            <BarChart3 size={14} />
+            Spotify Listeners
+          </div>
+          <h3 className="text-2xl md:text-4xl font-black italic">
+            {(artist.socialLinks as any)?.spotifyListeners || '—'}
+          </h3>
+        </div>
         <div className="bg-violet-500 p-4 md:p-6 rounded-xl text-white shadow-lg">
           <div className="flex items-center gap-2 mb-1 md:mb-2 opacity-80 text-[10px] md:text-sm uppercase tracking-wider font-bold">
             <Share2 size={14} />
-            Reach
+            Instagram Followers
           </div>
-          <h3 className="text-2xl md:text-4xl font-black italic">{(artist.socialLinks as any)?.tiktokFollowers || '—'}</h3>
+          <h3 className="text-2xl md:text-4xl font-black italic">
+            {(artist.socialLinks as any)?.instagramFollowers || '—'}
+          </h3>
+        </div>
+        <div className="bg-violet-500 p-4 md:p-6 rounded-xl text-white shadow-lg">
+          <div className="flex items-center gap-2 mb-1 md:mb-2 opacity-80 text-[10px] md:text-sm uppercase tracking-wider font-bold">
+            <Share2 size={14} />
+            TikTok Followers
+          </div>
+          <h3 className="text-2xl md:text-4xl font-black italic">
+            {(artist.socialLinks as any)?.tiktokFollowers || '—'}
+          </h3>
         </div>
 
         {/* Marketing Plan */}
@@ -152,8 +157,8 @@ export default function ArtistDashboard() {
               <Rocket className="text-cyan-500" size={24} />
               Current Marketing Plan: "{activePlan?.title}"
             </h2>
-            <Link 
-              href="/dashboard/marketing" 
+            <Link
+              href="/dashboard/marketing"
               className="text-pink-400 hover:text-pink-300 text-sm font-semibold flex items-center gap-1"
             >
               Generate AI Plan
@@ -181,8 +186,8 @@ export default function ArtistDashboard() {
               <MessageSquare className="text-indigo-500" size={24} />
               Opportunity Matching
             </h2>
-            <Link 
-              href="/dashboard/opportunities" 
+            <Link
+              href="/dashboard/opportunities"
               className="text-indigo-500 hover:text-indigo-400 text-sm font-semibold flex items-center gap-1"
             >
               View All Opportunities
@@ -252,8 +257,8 @@ export default function ArtistDashboard() {
               <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
                 Access success strategies and manage your royalty collection bodies.
               </p>
-              <Link 
-                href="/dashboard/hub" 
+              <Link
+                href="/dashboard/hub"
                 className="inline-flex items-center gap-2 px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-all text-sm"
               >
                 Go to Hub
@@ -262,6 +267,22 @@ export default function ArtistDashboard() {
             </div>
           </div>
         </section>
+
+        {/* ── Phase 1: Opportunity Applications Tracker ── */}
+        <section className="md:col-span-2 mt-4">
+          <OpportunityTracker artistId={artist.id} />
+        </section>
+
+        {/* ── Phase 1: Goal & Task Progress Tracker ── */}
+        <section className="md:col-span-2 mt-4">
+          <GoalTracker artistId={artist.id} />
+        </section>
+
+        {/* ── Phase 1: EPK Editor & Public Link ── */}
+        <section className="md:col-span-2 mt-4">
+          <EPKEditor artistId={artist.id} artistName={artist.name} />
+        </section>
+
       </div>
     </div>
   );
