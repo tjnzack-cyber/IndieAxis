@@ -27,17 +27,17 @@ const CATEGORY_COLORS: Record<string, string> = {
 }
 
 // Seeded pitching windows — real opportunities artists can act on
-const SEED_WINDOWS: Omit<PitchingWindow, 'id'>[] = [
-  { title: 'BBC Introducing Uploads', category: 'Radio', month: 'Ongoing', deadline: 'Rolling', description: 'Upload tracks to BBC Introducing for regional radio play and festival slots.', location: 'UK' },
-  { title: 'SubmitHub Playlist Pitching', category: 'Playlist', month: 'Ongoing', deadline: 'Rolling', description: 'Pitch to independent playlist curators across Spotify, Apple Music and YouTube.', location: 'Global' },
-  { title: 'Spotify for Artists Editorial', category: 'Playlist', month: 'Ongoing', deadline: '7 days before release', description: 'Submit unreleased tracks for editorial playlist consideration via Spotify for Artists.', location: 'Global' },
-  { title: 'SXSW 2027 Artist Applications', category: 'Festival', month: 'Aug 2026', deadline: 'Sep 2026', description: 'Apply to perform at SXSW — one of the biggest music discovery festivals in the world.', location: 'Austin, TX' },
-  { title: 'The Great Escape 2027', category: 'Festival', month: 'Oct 2026', deadline: 'Nov 2026', description: 'UK showcase festival for emerging artists. Strong industry attendance.', location: 'Brighton, UK' },
-  { title: 'Sync Licensing — Music Vine', category: 'Sync', month: 'Ongoing', deadline: 'Rolling', description: 'Submit music for TV, film and ad placements via Music Vine open submission.', location: 'Global' },
-  { title: 'AWAL Open Submissions', category: 'Label', month: 'Ongoing', deadline: 'Rolling', description: 'AWAL accepts direct artist applications for distribution and label services.', location: 'Global' },
-  { title: 'Africa Rising — Audiomack', category: 'Playlist', month: 'Jul 2026', deadline: 'Jul 31 2026', description: 'Audiomack's editorial playlist spotlighting African artists across genres.', location: 'Africa / Global' },
-  { title: 'Notion Magazine Fresh Picks', category: 'Blog', month: 'Ongoing', deadline: 'Rolling', description: 'Submit music to Notion for editorial coverage and playlist features.', location: 'UK / Global' },
-  { title: 'Afropunk Festival 2027', category: 'Festival', month: 'Sep 2026', deadline: 'Oct 2026', description: 'Apply to perform at Afropunk — celebrating Black creativity across music and culture.', location: 'Brooklyn / Global' },
+const SEED_WINDOWS: Omit<PitchingWindow, "id">[] = [
+  { title: "BBC Introducing Uploads", category: "Radio", month: "Ongoing", deadline: "Rolling", description: "Upload tracks to BBC Introducing for regional radio play and festival slots.", location: "UK" },
+  { title: "SubmitHub Playlist Pitching", category: "Playlist", month: "Ongoing", deadline: "Rolling", description: "Pitch to independent playlist curators across Spotify, Apple Music and YouTube.", location: "Global" },
+  { title: "Spotify for Artists Editorial", category: "Playlist", month: "Ongoing", deadline: "7 days before release", description: "Submit unreleased tracks for editorial playlist consideration via Spotify for Artists.", location: "Global" },
+  { title: "SXSW 2027 Artist Applications", category: "Festival", month: "Aug 2026", deadline: "Sep 2026", description: "Apply to perform at SXSW, one of the biggest music discovery festivals in the world.", location: "Austin, TX" },
+  { title: "The Great Escape 2027", category: "Festival", month: "Oct 2026", deadline: "Nov 2026", description: "UK showcase festival for emerging artists. Strong industry attendance.", location: "Brighton, UK" },
+  { title: "Sync Licensing via Music Vine", category: "Sync", month: "Ongoing", deadline: "Rolling", description: "Submit music for TV, film and ad placements via Music Vine open submission.", location: "Global" },
+  { title: "AWAL Open Submissions", category: "Label", month: "Ongoing", deadline: "Rolling", description: "AWAL accepts direct artist applications for distribution and label services.", location: "Global" },
+  { title: "Africa Rising on Audiomack", category: "Playlist", month: "Jul 2026", deadline: "Jul 31 2026", description: "Audiomack editorial playlist spotlighting African artists across genres.", location: "Africa / Global" },
+  { title: "Notion Magazine Fresh Picks", category: "Blog", month: "Ongoing", deadline: "Rolling", description: "Submit music to Notion for editorial coverage and playlist features.", location: "UK / Global" },
+  { title: "Afropunk Festival 2027", category: "Festival", month: "Sep 2026", deadline: "Oct 2026", description: "Apply to perform at Afropunk, celebrating Black creativity across music and culture.", location: "Brooklyn / Global" },
 ]
 
 export default function PitchingWindows({ artistGenre }: { artistGenre?: string }) {
