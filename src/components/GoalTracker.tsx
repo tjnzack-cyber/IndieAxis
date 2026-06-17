@@ -27,8 +27,10 @@ export default function GoalTracker({ artistId }: { artistId: string }) {
   const [loading, setLoading]           = useState(true)
 
   const load = useCallback(async () => {
-    const r = await fetch(`/api/goals?artistId=${artistId}`)
-    if (r.ok) setGoals(await r.json())
+    try {
+      const r = await fetch(`/api/goals?artistId=${artistId}`)
+      if (r.ok) { const data = await r.json(); setGoals(Array.isArray(data) ? data : []) }
+    } catch(e) { console.error('Goals load error', e) }
     setLoading(false)
   }, [artistId])
 
