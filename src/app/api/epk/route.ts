@@ -1,7 +1,7 @@
 // src/app/api/epk/route.ts
 // Works with your EXISTING EPK model — uses isPublic, musicLinks, pressQuotes, etc.
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import prisma from '@/lib/prisma'
 
 export async function GET(req: NextRequest) {
   const artistId = req.nextUrl.searchParams.get('artistId')
