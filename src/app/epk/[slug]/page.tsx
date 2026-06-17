@@ -1,13 +1,14 @@
 // src/app/epk/[slug]/page.tsx  — PUBLIC, no auth required
 import { notFound } from 'next/navigation'
-import { prisma } from '@/lib/prisma'
+import prisma from '@/lib/prisma'
 import Image from 'next/image'
 
-interface Props { params: { slug: string } }
+interface Props { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props) {
+  const { slug } = await params
   const epk = await prisma.ePK.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
     include: { artist: true },
   })
   if (!epk || !epk.isPublic) return { title: 'Not Found' }
@@ -18,8 +19,9 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function EPKPublicPage({ params }: Props) {
+  const { slug } = await params
   const epk = await prisma.ePK.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
     include: {
       artist: true,
       photos: { orderBy: { order: 'asc' } },
@@ -55,7 +57,6 @@ export default async function EPKPublicPage({ params }: Props) {
       </section>
 
       <div className="max-w-4xl mx-auto px-6 py-12 space-y-14">
-        {/* Bio / Description */}
         {(epk.description || epk.artist.bio) && (
           <section>
             <h2 className="text-xs uppercase tracking-widest text-purple-400 mb-4">About</h2>
@@ -65,7 +66,6 @@ export default async function EPKPublicPage({ params }: Props) {
           </section>
         )}
 
-        {/* Press Quotes */}
         {pressQuotes && pressQuotes.length > 0 && (
           <section className="space-y-4">
             {pressQuotes.map((q, i) => (
@@ -76,7 +76,6 @@ export default async function EPKPublicPage({ params }: Props) {
           </section>
         )}
 
-        {/* Photo Gallery */}
         {galleryPhotos.length > 0 && (
           <section>
             <h2 className="text-xs uppercase tracking-widest text-purple-400 mb-4">Photos</h2>
@@ -92,13 +91,9 @@ export default async function EPKPublicPage({ params }: Props) {
                 </div>
               ))}
             </div>
-            <p className="text-xs text-gray-500 mt-3">
-              Photos available for press use.
-            </p>
           </section>
         )}
 
-        {/* Music Links */}
         {musicLinks && Object.keys(musicLinks).length > 0 && (
           <section>
             <h2 className="text-xs uppercase tracking-widest text-purple-400 mb-4">Listen</h2>
