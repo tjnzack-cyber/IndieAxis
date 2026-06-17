@@ -2,12 +2,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const body = await req.json()
   const { isPrimary, caption, order } = body
 
   if (isPrimary) {
-    const photo = await prisma.ePKPhoto.findUnique({ where: { id: params.id } })
+    const photo = await prisma.ePKPhoto.findUnique({ where: { id } })
     if (photo) {
       await prisma.ePKPhoto.updateMany({
         where: { epkId: photo.epkId, isPrimary: true },
@@ -17,7 +18,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 
   const updated = await prisma.ePKPhoto.update({
-    where: { id: params.id },
+    where: { id },
     data: {
       ...(isPrimary !== undefined ? { isPrimary } : {}),
       ...(caption !== undefined ? { caption } : {}),
@@ -27,7 +28,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   return NextResponse.json(updated)
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
-  await prisma.ePKPhoto.delete({ where: { id: params.id } })
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  await prisma.ePKPhoto.delete({ where: { id } })
   return NextResponse.json({ deleted: true })
 }
