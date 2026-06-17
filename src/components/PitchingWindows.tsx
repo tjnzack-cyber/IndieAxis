@@ -172,13 +172,15 @@ export default function PitchingWindows({ artistGenre }: { artistGenre?: string 
                 <div key={w.id} className="bg-zinc-900 rounded-xl overflow-hidden">
                   <button onClick={() => setExpanded(open ? null : w.id)} className="w-full p-4 text-left">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
-                        <span className="text-white text-sm font-semibold truncate">{w.title}</span>
-                        {w.category && (
-                          <span className={`text-xs px-2 py-0.5 rounded-full border ${catColor}`}>
-                            {w.category}
-                          </span>
-                        )}
+                      <div className="flex flex-col flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-white text-sm font-semibold">{w.title}</span>
+                          {w.category && (
+                            <span className={`text-xs px-2 py-0.5 rounded-full border flex-shrink-0 ${catColor}`}>
+                              {w.category}
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <ChevronDown size={13} className={`text-zinc-500 flex-shrink-0 ml-2 transition-transform ${open ? 'rotate-180' : ''}`} />
                     </div>
