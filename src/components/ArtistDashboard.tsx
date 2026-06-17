@@ -1,4 +1,3 @@
-import ReleasePlanner from './ReleasePlanner'
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -11,6 +10,7 @@ import NotificationCenter from './NotificationCenter';
 import OpportunityTracker from './OpportunityTracker';
 import GoalTracker from './GoalTracker';
 import EPKEditor from './EPKEditor';
+import ReleasePlanner from './ReleasePlanner';
 
 interface ArtistProfileExtended extends ArtistProfile {
   user: User;
@@ -158,10 +158,7 @@ export default function ArtistDashboard() {
               <Rocket className="text-cyan-500" size={24} />
               Current Marketing Plan: "{activePlan?.title}"
             </h2>
-            <Link
-              href="/dashboard/marketing"
-              className="text-pink-400 hover:text-pink-300 text-sm font-semibold flex items-center gap-1"
-            >
+            <Link href="/dashboard/marketing" className="text-pink-400 hover:text-pink-300 text-sm font-semibold flex items-center gap-1">
               Generate AI Plan
               <ExternalLink size={14} />
             </Link>
@@ -187,10 +184,7 @@ export default function ArtistDashboard() {
               <MessageSquare className="text-indigo-500" size={24} />
               Opportunity Matching
             </h2>
-            <Link
-              href="/dashboard/opportunities"
-              className="text-indigo-500 hover:text-indigo-400 text-sm font-semibold flex items-center gap-1"
-            >
+            <Link href="/dashboard/opportunities" className="text-indigo-500 hover:text-indigo-400 text-sm font-semibold flex items-center gap-1">
               View All Opportunities
               <ExternalLink size={14} />
             </Link>
@@ -219,18 +213,14 @@ export default function ArtistDashboard() {
                     <h4 className="font-semibold text-zinc-900 dark:text-white">The Rusty Anchor - Live Set (June 15)</h4>
                     <p className="text-sm text-zinc-500 dark:text-zinc-400">Camden, London</p>
                   </div>
-                  <button className="px-4 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 transition-all">
-                    Apply
-                  </button>
+                  <button className="px-4 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 transition-all">Apply</button>
                 </div>
                 <div className="bg-white dark:bg-zinc-800 p-4 rounded-xl border border-zinc-100 dark:border-zinc-800 flex justify-between items-center shadow-sm hover:border-indigo-200 transition-all">
                   <div>
                     <h4 className="font-semibold text-zinc-900 dark:text-white">Underground Beats Podcast - Interview</h4>
                     <p className="text-sm text-zinc-500 dark:text-zinc-400">Remote / London</p>
                   </div>
-                  <button className="px-4 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 transition-all">
-                    Apply
-                  </button>
+                  <button className="px-4 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 transition-all">Apply</button>
                 </div>
               </>
             )}
@@ -258,10 +248,7 @@ export default function ArtistDashboard() {
               <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
                 Access success strategies and manage your royalty collection bodies.
               </p>
-              <Link
-                href="/dashboard/hub"
-                className="inline-flex items-center gap-2 px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-all text-sm"
-              >
+              <Link href="/dashboard/hub" className="inline-flex items-center gap-2 px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-all text-sm">
                 Go to Hub
                 <ChevronRight size={16} />
               </Link>
@@ -282,6 +269,11 @@ export default function ArtistDashboard() {
         {/* ── Phase 1: EPK Editor & Public Link ── */}
         <section className="md:col-span-2 mt-4">
           <EPKEditor artistId={artist.id} artistName={artist.name} />
+        </section>
+
+        {/* ── Phase 2: Release Planner ── */}
+        <section className="md:col-span-2 mt-4">
+          <ReleasePlanner artistId={artist.id} />
         </section>
 
       </div>
