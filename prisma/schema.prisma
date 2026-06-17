@@ -105,6 +105,8 @@ model ArtistProfile {
   // ── Phase 1 additions ──
   opportunities   Opportunity[]
   goals           ArtistGoal[]
+  // ── Phase 2 additions ──
+  releases        Release[]
 }
 
 model EPK {
@@ -247,4 +249,50 @@ model EPKPhoto {
   isPrimary Boolean  @default(false)
   createdAt DateTime @default(now())
   @@index([epkId])
+}
+
+// ─── Phase 2: Release Planner ─────────────────────────────────────────────────
+
+enum ReleaseType {
+  SINGLE
+  EP
+  ALBUM
+  MIXTAPE
+  OTHER
+}
+
+enum ReleaseStatus {
+  IDEA
+  IN_PROGRESS
+  READY
+  RELEASED
+}
+
+model Release {
+  id          String        @id @default(uuid())
+  artistId    String
+  artist      ArtistProfile @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  title       String
+  type        ReleaseType   @default(SINGLE)
+  status      ReleaseStatus @default(IDEA)
+  releaseDate DateTime?
+  coverUrl    String?
+  notes       String?
+  tasks       ReleaseTask[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  @@index([artistId])
+}
+
+model ReleaseTask {
+  id        String   @id @default(uuid())
+  releaseId String
+  release   Release  @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  title     String
+  done      Boolean  @default(false)
+  dueDate   DateTime?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([releaseId])
 }
