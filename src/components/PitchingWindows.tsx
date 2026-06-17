@@ -100,11 +100,11 @@ export default function PitchingWindows({ artistGenre }: { artistGenre?: string 
   }
 
   return (
-    <div className="bg-zinc-800/50 rounded-2xl p-6 border border-zinc-700">
+    <div className="bg-white dark:bg-zinc-800/50 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-700">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h2 className="text-white font-bold text-lg flex items-center gap-2">
+          <h2 className="text-zinc-900 dark:text-white font-bold text-lg flex items-center gap-2">
             <Bell size={18} className="text-yellow-400" /> Pitching Windows
           </h2>
           <p className="text-zinc-400 text-xs mt-0.5">Open submission windows for playlists, festivals, radio & more</p>
@@ -169,12 +169,12 @@ export default function PitchingWindows({ artistGenre }: { artistGenre?: string 
               const days = daysUntil(w.deadline)
               const catColor = CATEGORY_COLORS[w.category ?? 'Other'] ?? CATEGORY_COLORS.Other
               return (
-                <div key={w.id} className="bg-zinc-900 rounded-xl overflow-hidden">
+                <div key={w.id} className="bg-zinc-100 dark:bg-zinc-900 rounded-xl overflow-hidden border border-zinc-200 dark:border-transparent">
                   <button onClick={() => setExpanded(open ? null : w.id)} className="w-full p-4 text-left">
                     <div className="flex items-center justify-between">
                       <div className="flex flex-col flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-white text-sm font-semibold">{w.title}</span>
+                          <span className="text-zinc-900 dark:text-white text-sm font-semibold">{w.title}</span>
                           {w.category && (
                             <span className={`text-xs px-2 py-0.5 rounded-full border flex-shrink-0 ${catColor}`}>
                               {w.category}
@@ -211,7 +211,7 @@ export default function PitchingWindows({ artistGenre }: { artistGenre?: string 
 
                   {open && (
                     <div className="border-t border-zinc-800 px-4 pb-4 pt-3">
-                      {w.description && <p className="text-zinc-400 text-sm mb-3">{w.description}</p>}
+                      {w.description && <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-3">{w.description}</p>}
                       <div className="flex items-center justify-between">
                         <span className="text-zinc-600 text-xs">
                           {w.deadline === 'Rolling' || !w.deadline ? '🟢 Always open' : ''}
