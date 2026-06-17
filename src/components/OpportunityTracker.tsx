@@ -46,8 +46,10 @@ export default function OpportunityTracker({ artistId }: { artistId: string }) {
   const [loading, setLoading]     = useState(true)
 
   const load = useCallback(async () => {
-    const r = await fetch(`/api/opportunities?artistId=${artistId}`)
-    if (r.ok) setOpps(await r.json())
+    try {
+      const r = await fetch(`/api/opportunities?artistId=${artistId}`)
+      if (r.ok) { const data = await r.json(); setOpps(Array.isArray(data) ? data : []) }
+    } catch(e) { console.error('Opportunities load error', e) }
     setLoading(false)
   }, [artistId])
 
