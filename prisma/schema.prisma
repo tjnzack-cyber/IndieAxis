@@ -1,21 +1,40 @@
-model Opportunity {
-  id           String            @id @default(cuid())
-  artistId     String
-  artist       Artist            @relation(fields: [artistId], references: [id], onDelete: Cascade)
-  title        String
-  organization String?
-  type         OpportunityType   @default(OTHER)
-  deadline     DateTime?
-  prize        String?
-  description  String?
-  applyUrl     String?
-  status       ApplicationStatus @default(DRAFT)
-  appliedAt    DateTime?
-  notes        String?
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  @@index([artistId])
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
 }
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Existing enums ───────────────────────────────────────────────────────────
+
+enum Role {
+  ARTIST
+  MANAGER
+  ADMIN
+}
+
+enum SubscriptionStatus {
+  FREE
+  PREMIUM
+}
+
+enum MarketingPlanStatus {
+  PLANNED
+  ACTIVE
+  COMPLETED
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+// ─── Phase 1 new enums ────────────────────────────────────────────────────────
 
 enum OpportunityType {
   GRANT
@@ -27,41 +46,13 @@ enum OpportunityType {
   OTHER
 }
 
-enum ApplicationStatus {
+enum OpportunityStatus {
   DRAFT
   SUBMITTED
   IN_REVIEW
   ACCEPTED
   REJECTED
   WITHDRAWN
-}
-
-model Goal {
-  id        String       @id @default(cuid())
-  artistId  String
-  artist    Artist       @relation(fields: [artistId], references: [id], onDelete: Cascade)
-  title     String
-  category  GoalCategory @default(GENERAL)
-  dueDate   DateTime?
-  progress  Int          @default(0)
-  archived  Boolean      @default(false)
-  tasks     Task[]
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  @@index([artistId])
-}
-
-model Task {
-  id        String   @id @default(cuid())
-  goalId    String
-  goal      Goal     @relation(fields: [goalId], references: [id], onDelete: Cascade)
-  title     String
-  done      Boolean  @default(false)
-  dueDate   DateTime?
-  order     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  @@index([goalId])
 }
 
 enum GoalCategory {
@@ -73,23 +64,181 @@ enum GoalCategory {
   GENERAL
 }
 
+// ─── Existing models ──────────────────────────────────────────────────────────
+
+model User {
+  id                  String             @id @default(uuid())
+  email               String             @unique
+  passwordHash        String
+  role                Role               @default(ARTIST)
+  subscriptionStatus  SubscriptionStatus @default(FREE)
+  trialEndsAt         DateTime?
+  trialUsed           Boolean            @default(false)
+  createdAt           DateTime           @default(now())
+  artistProfile       ArtistProfile?
+  payments            Payment[]
+  passwordResetTokens PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model ArtistProfile {
+  id              String           @id @default(uuid())
+  userId          String           @unique
+  user            User             @relation(fields: [userId], references: [id])
+  name            String
+  bio             String?
+  genre           String?
+  location        String?
+  socialLinks     Json?
+  profileImageUrl String?
+  epks            EPK[]
+  marketingPlans  MarketingPlan[]
+  gigApplications GigApplication[]
+  // ── Phase 1 additions ──
+  opportunities   Opportunity[]
+  goals           ArtistGoal[]
+}
+
 model EPK {
-  id             String     @id @default(cuid())
-  artistId       String     @unique
-  artist         Artist     @relation(fields: [artistId], references: [id], onDelete: Cascade)
-  slug           String     @unique
-  published      Boolean    @default(false)
-  bio            String?
-  tagline        String?
-  pressQuote     String?
-  streamingLinks Json?
-  photos         EPKPhoto[]
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  id          String     @id @default(uuid())
+  artistId    String
+  artist      ArtistProfile @relation(fields: [artistId], references: [id])
+  title       String
+  slug        String     @unique
+  description String?
+  musicLinks  Json?
+  videoLinks  Json?
+  pressQuotes Json?
+  isPublic    Boolean    @default(false)
+  // ── Phase 1 addition ──
+  photos      EPKPhoto[]
+}
+
+model MarketingPlan {
+  id       String              @id @default(uuid())
+  artistId String
+  artist   ArtistProfile       @relation(fields: [artistId], references: [id])
+  title    String
+  strategy String?
+  goals    Json?
+  status   MarketingPlanStatus @default(PLANNED)
+  tasks    MarketingTask[]
+}
+
+model MarketingTask {
+  id              String        @id @default(uuid())
+  marketingPlanId String
+  marketingPlan   MarketingPlan @relation(fields: [marketingPlanId], references: [id])
+  title           String
+  description     String?
+  week            Int?
+  isCompleted     Boolean       @default(false)
+  order           Int
+}
+
+model Gig {
+  id            String           @id @default(uuid())
+  title         String
+  description   String?
+  location      String?
+  genre         String?
+  venueType     String?
+  gigDate       DateTime?
+  pitchDeadline DateTime?
+  applications  GigApplication[]
+}
+
+model GigApplication {
+  id           String            @id @default(uuid())
+  gigId        String
+  gig          Gig               @relation(fields: [gigId], references: [id])
+  artistId     String
+  artist       ArtistProfile     @relation(fields: [artistId], references: [id])
+  status       ApplicationStatus @default(PENDING)
+  pitchMessage String?
+}
+
+model PitchingWindow {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  month       String
+  location    String?
+  deadline    String?
+  category    String?
+}
+
+model Payment {
+  id         String   @id @default(uuid())
+  amount     Float
+  currency   String
+  status     String
+  reference  String   @unique
+  trackingId String?  @unique
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+}
+
+// ─── Phase 1 new models ───────────────────────────────────────────────────────
+
+model Opportunity {
+  id           String            @id @default(uuid())
+  artistId     String
+  artist       ArtistProfile     @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  title        String
+  organization String?
+  type         OpportunityType   @default(OTHER)
+  deadline     DateTime?
+  prize        String?
+  description  String?
+  applyUrl     String?
+  status       OpportunityStatus @default(DRAFT)
+  appliedAt    DateTime?
+  notes        String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  @@index([artistId])
+}
+
+model ArtistGoal {
+  id        String        @id @default(uuid())
+  artistId  String
+  artist    ArtistProfile @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  title     String
+  category  GoalCategory  @default(GENERAL)
+  dueDate   DateTime?
+  progress  Int           @default(0)
+  archived  Boolean       @default(false)
+  tasks     ArtistTask[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  @@index([artistId])
+}
+
+model ArtistTask {
+  id        String     @id @default(uuid())
+  goalId    String
+  goal      ArtistGoal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  title     String
+  done      Boolean    @default(false)
+  dueDate   DateTime?
+  order     Int        @default(0)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  @@index([goalId])
 }
 
 model EPKPhoto {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   epkId     String
   epk       EPK      @relation(fields: [epkId], references: [id], onDelete: Cascade)
   url       String
