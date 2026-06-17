@@ -2,7 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const body = await req.json()
   const { title, dueDate, order } = body
 
@@ -10,7 +11,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   const task = await prisma.artistTask.create({
     data: {
-      goalId: params.id,
+      goalId: id,
       title,
       dueDate: dueDate ? new Date(dueDate) : undefined,
       order: order ?? 0,
