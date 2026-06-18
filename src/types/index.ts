@@ -1,8 +1,9 @@
+// src/types/index.ts — full updated file with Fan CRM types added
+
 export type Role = 'ARTIST' | 'MANAGER' | 'ADMIN';
-
 export type MarketingPlanStatus = 'PLANNED' | 'ACTIVE' | 'COMPLETED';
-
 export type ApplicationStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED';
+export type ContactType = 'FAN' | 'INDUSTRY' | 'PRESS' | 'VENUE' | 'PLAYLIST_CURATOR' | 'LABEL' | 'OTHER';
 
 export interface User {
   id: string;
@@ -89,4 +90,21 @@ export interface PitchingWindow {
   location?: string;
   deadline?: string;
   category?: string;
+}
+
+export interface FanContact {
+  id: string;
+  artistId: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  type: ContactType;
+  tags: string[];
+  notes?: string;
+  location?: string;
+  instagram?: string;
+  twitter?: string;
+  metAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
