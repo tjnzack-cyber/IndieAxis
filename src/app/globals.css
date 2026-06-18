@@ -1,47 +1,167 @@
-/* ─── Phase 3: Mobile responsiveness fixes (v3 — SAFE, scoped) ──────────────
-   DELETE any earlier "Phase 3" CSS block you pasted before adding this one.
-   This version only targets spacing/wrapping, never colors or backgrounds. */
+@import "tailwindcss";
 
-html, body {
-  overflow-x: hidden;
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --card: #f4f4f5;
+  --card-border: #e4e4e7;
+  --nav-bg: rgba(255, 255, 255, 0.95);
+  --input-bg: #f4f4f5;
+  --text-muted: #71717a;
 }
 
-/* Core fix for letter-stacking: only applies inside nav/buttons/cards,
-   not globally, so it cannot touch colors anywhere */
-nav .flex > *,
-button .flex > *,
-.rounded-xl .flex > *,
-.rounded-2xl .flex > * {
-  min-width: 0;
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
-@media (max-width: 640px) {
-  .max-w-4xl {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-  }
-
-  .grid-cols-2 {
-    gap: 0.75rem;
-  }
-
-  h1.text-4xl {
-    font-size: 1.75rem;
-    line-height: 2.1rem;
-  }
-  h1.text-3xl {
-    font-size: 1.5rem;
-  }
-
-  .rounded-full.px-5 {
-    padding-left: 0.85rem;
-    padding-right: 0.85rem;
-    font-size: 0.75rem;
-  }
+.dark {
+  --background: #0b0b1a;
+  --foreground: #ededed;
+  --card: #18181b;
+  --card-border: #27272a;
+  --nav-bg: rgba(11, 11, 26, 0.95);
+  --input-bg: #27272a;
+  --text-muted: #a1a1aa;
 }
 
-@media (max-width: 640px) {
-  button, a {
-    min-height: 36px;
-  }
+.light {
+  --background: #ffffff;
+  --foreground: #171717;
+  --card: #f4f4f5;
+  --card-border: #e4e4e7;
+  --nav-bg: rgba(255, 255, 255, 0.95);
+  --input-bg: #f4f4f5;
+  --text-muted: #71717a;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.light body {
+  background: linear-gradient(135deg, #e8e8f0 0%, #f0f0f8 50%, #ebebf5 100%) !important;
+  min-height: 100vh;
+}
+
+.light .bg-\[\#0b0b1a\] {
+  background: linear-gradient(135deg, #f0f0f5 0%, #e8e8f0 50%, #f5f5ff 100%) !important;
+}
+
+.light .bg-zinc-950 {
+  background: transparent !important;
+}
+
+.light .bg-zinc-800 {
+  background-color: #f4f4f5 !important;
+}
+
+.light .bg-zinc-800\/50 {
+  background-color: rgba(244, 244, 245, 0.5) !important;
+}
+
+.light .text-white {
+  color: #171717 !important;
+}
+
+.light .text-zinc-400 {
+  color: #52525b !important;
+}
+
+.light .text-zinc-500 {
+  color: #71717a !important;
+}
+
+.light .border-purple-500\/20 {
+  border-color: rgba(168, 85, 247, 0.3) !important;
+}
+
+.light .border-zinc-800 {
+  border-color: #e4e4e7 !important;
+}
+
+.light nav {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-color: #e4e4e7 !important;
+}
+
+.light .text-transparent {
+  color: #4c1d95 !important;
+  -webkit-text-fill-color: #4c1d95 !important;
+}
+
+.light h1, .light h2, .light h3 {
+  color: #1a1a2e !important;
+}
+.light input,
+.light textarea,
+.light select {
+  background-color: #ffffff !important;
+  color: #171717 !important;
+  border-color: #d4d4d8 !important;
+}
+
+.light .bg-\[\#080814\] {
+  background-color: #f4f4f5 !important;
+}
+
+.light .bg-\[\#0f0f1a\] {
+  background-color: #f4f4f5 !important;
+}
+
+.light label {
+  color: #52525b !important;
+}
+
+.light p {
+  color: #3f3f46 !important;
+}
+
+.light .text-zinc-600 {
+  color: #52525b !important;
+}
+
+.light .text-zinc-300 {
+  color: #3f3f46 !important;
+}
+.light .bg-\[\#16213e\] {
+  background-color: #e8e8f5 !important;
+  border-color: rgba(99, 102, 241, 0.2) !important;
+}
+
+.light .bg-\[\#080814\] {
+  background-color: #f0f0f8 !important;
+}
+
+.light .bg-\[\#080814\]\/50 {
+  background-color: rgba(240, 240, 248, 0.5) !important;
+}
+
+.light .text-cyan-400 {
+  color: #0891b2 !important;
+}
+
+.light .text-zinc-400 {
+  color: #52525b !important;
+}
+
+.light .text-zinc-500 {
+  color: #71717a !important;
+}
+
+.light .text-zinc-600 {
+  color: #52525b !important;
+}
+
+.light .border-white\/5 {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.light .bg-\[\#0b0b1a\]\/80 {
+  background-color: rgba(255, 255, 255, 0.9) !important;
 }
