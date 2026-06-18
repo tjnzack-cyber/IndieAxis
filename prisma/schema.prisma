@@ -107,6 +107,7 @@ model ArtistProfile {
   goals           ArtistGoal[]
   // ── Phase 2 additions ──
   releases        Release[]
+  revenueEntries  RevenueEntry[]
 }
 
 model EPK {
@@ -295,4 +296,31 @@ model ReleaseTask {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@index([releaseId])
+}
+
+// ─── Phase 2: Revenue Tracker ─────────────────────────────────────────────────
+
+enum RevenueType {
+  STREAMING
+  GIG
+  SYNC
+  MERCHANDISE
+  ROYALTY
+  GRANT
+  OTHER
+}
+
+model RevenueEntry {
+  id          String      @id @default(uuid())
+  artistId    String
+  artist      ArtistProfile @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  type        RevenueType @default(OTHER)
+  amount      Float
+  currency    String      @default("USD")
+  description String?
+  source      String?
+  date        DateTime    @default(now())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  @@index([artistId])
 }
