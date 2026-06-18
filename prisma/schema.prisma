@@ -108,6 +108,7 @@ model ArtistProfile {
   // ── Phase 2 additions ──
   releases        Release[]
   revenueEntries  RevenueEntry[]
+  fanContacts     FanContact[]
 }
 
 model EPK {
@@ -320,6 +321,37 @@ model RevenueEntry {
   description String?
   source      String?
   date        DateTime    @default(now())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  @@index([artistId])
+}
+
+// ─── Phase 2: Fan CRM ─────────────────────────────────────────────────────────
+
+enum ContactType {
+  FAN
+  INDUSTRY
+  PRESS
+  VENUE
+  PLAYLIST_CURATOR
+  LABEL
+  OTHER
+}
+
+model FanContact {
+  id          String      @id @default(uuid())
+  artistId    String
+  artist      ArtistProfile @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  name        String
+  email       String?
+  phone       String?
+  type        ContactType @default(FAN)
+  tags        String[]
+  notes       String?
+  location    String?
+  instagram   String?
+  twitter     String?
+  metAt       String?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   @@index([artistId])
