@@ -310,6 +310,26 @@ export default function ArtistDashboard() {
           </div>
         </section>
 
+        {/* ── Phase 2: Analytics ── */}
+        <section className="md:col-span-2 mt-4">
+          <div className="bg-indigo-600/5 p-6 rounded-xl border border-indigo-500/20 flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-bold text-indigo-400 mb-1 flex items-center gap-2">
+                <BarChart3 size={20} />
+                Analytics Dashboard
+              </h3>
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm">
+                Track follower growth, revenue breakdown and release progress over time.
+              </p>
+            </div>
+            <Link href="/dashboard/analytics"
+              className="inline-flex items-center gap-2 px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-all text-sm flex-shrink-0 ml-4">
+              <BarChart3 size={16} />
+              View Analytics
+            </Link>
+          </div>
+        </section>
+
       </div>
     </div>
   );
