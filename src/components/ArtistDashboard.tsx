@@ -276,6 +276,40 @@ export default function ArtistDashboard() {
           <ReleasePlanner artistId={artist.id} />
         </section>
 
+        {/* ── Phase 2: Quick links ── */}
+        <section className="md:col-span-2 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-pink-500/5 p-6 rounded-xl border border-pink-500/20">
+              <h3 className="text-lg font-bold text-pink-400 mb-2 flex items-center gap-2">
+                <Users size={20} />
+                Fan & Contact CRM
+              </h3>
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
+                Manage fans, industry contacts, press, venues and playlist curators.
+              </p>
+              <Link href="/dashboard/fans"
+                className="inline-flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-pink-500 to-[#6c5ce7] hover:opacity-90 text-white rounded-lg font-semibold transition-all text-sm">
+                <Users size={16} />
+                Open CRM
+              </Link>
+            </div>
+            <div className="bg-green-500/5 p-6 rounded-xl border border-green-500/20">
+              <h3 className="text-lg font-bold text-green-400 mb-2 flex items-center gap-2">
+                <BarChart3 size={20} />
+                Revenue Tracker
+              </h3>
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
+                Log streaming, gig, sync and royalty income all in one place.
+              </p>
+              <Link href="/dashboard/hub"
+                className="inline-flex items-center gap-2 px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-all text-sm">
+                <BarChart3 size={16} />
+                Track Revenue
+              </Link>
+            </div>
+          </div>
+        </section>
+
       </div>
     </div>
   );
