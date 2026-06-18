@@ -78,8 +78,8 @@ export default function ArtistDashboard() {
       )}
 
       {/* Header */}
-      <header className="p-6 md:p-8 border-b border-zinc-200 dark:border-zinc-800 flex flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-4 md:gap-6">
+      <header className="p-4 md:p-8 border-b border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3 md:gap-6 min-w-0 w-full sm:w-auto">
           <div className="w-16 h-16 md:w-24 md:h-24 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden flex-shrink-0 border-2 border-indigo-500/20">
             {artist.profileImageUrl ? (
               <img src={artist.profileImageUrl} alt={artist.name} className="w-full h-full object-cover" />
@@ -89,15 +89,15 @@ export default function ArtistDashboard() {
               </div>
             )}
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="text-[10px] font-black uppercase tracking-widest text-indigo-400 md:mb-1">Artist Profile</div>
-            <h1 className="text-xl md:text-3xl font-black text-zinc-900 dark:text-white leading-tight">{artist.name}</h1>
-            <p className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 font-medium">
+            <h1 className="text-lg sm:text-xl md:text-3xl font-black text-zinc-900 dark:text-white leading-tight truncate">{artist.name}</h1>
+            <p className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 font-medium truncate">
               {artist.genre} • {artist.location}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2 md:gap-4">
+        <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
             className="p-2 md:p-2.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors relative"
@@ -123,42 +123,42 @@ export default function ArtistDashboard() {
 
       <div className="p-4 md:p-8 grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-6">
         {/* Stats */}
-        <div className="bg-indigo-600 p-4 md:p-6 rounded-xl text-white shadow-lg">
-          <div className="flex items-center gap-2 mb-1 md:mb-2 opacity-80 text-[10px] md:text-sm uppercase tracking-wider font-bold">
-            <BarChart3 size={14} />
-            Spotify Listeners
+        <div className="bg-indigo-600 p-3 sm:p-4 md:p-6 rounded-xl text-white shadow-lg min-w-0">
+          <div className="flex items-center gap-1.5 mb-1 md:mb-2 opacity-80 text-[9px] sm:text-[10px] md:text-sm uppercase tracking-wider font-bold min-w-0">
+            <BarChart3 size={14} className="flex-shrink-0" />
+            <span className="truncate">Spotify Listeners</span>
           </div>
-          <h3 className="text-2xl md:text-4xl font-black italic">
+          <h3 className="text-xl sm:text-2xl md:text-4xl font-black italic truncate">
             {(artist.socialLinks as any)?.spotifyListeners || '—'}
           </h3>
         </div>
-        <div className="bg-violet-500 p-4 md:p-6 rounded-xl text-white shadow-lg">
-          <div className="flex items-center gap-2 mb-1 md:mb-2 opacity-80 text-[10px] md:text-sm uppercase tracking-wider font-bold">
-            <Share2 size={14} />
-            Instagram Followers
+        <div className="bg-violet-500 p-3 sm:p-4 md:p-6 rounded-xl text-white shadow-lg min-w-0">
+          <div className="flex items-center gap-1.5 mb-1 md:mb-2 opacity-80 text-[9px] sm:text-[10px] md:text-sm uppercase tracking-wider font-bold min-w-0">
+            <Share2 size={14} className="flex-shrink-0" />
+            <span className="truncate">Instagram Followers</span>
           </div>
-          <h3 className="text-2xl md:text-4xl font-black italic">
+          <h3 className="text-xl sm:text-2xl md:text-4xl font-black italic truncate">
             {(artist.socialLinks as any)?.instagramFollowers || '—'}
           </h3>
         </div>
-        <div className="bg-violet-500 p-4 md:p-6 rounded-xl text-white shadow-lg">
-          <div className="flex items-center gap-2 mb-1 md:mb-2 opacity-80 text-[10px] md:text-sm uppercase tracking-wider font-bold">
-            <Share2 size={14} />
-            TikTok Followers
+        <div className="bg-violet-500 p-3 sm:p-4 md:p-6 rounded-xl text-white shadow-lg min-w-0">
+          <div className="flex items-center gap-1.5 mb-1 md:mb-2 opacity-80 text-[9px] sm:text-[10px] md:text-sm uppercase tracking-wider font-bold min-w-0">
+            <Share2 size={14} className="flex-shrink-0" />
+            <span className="truncate">TikTok Followers</span>
           </div>
-          <h3 className="text-2xl md:text-4xl font-black italic">
+          <h3 className="text-xl sm:text-2xl md:text-4xl font-black italic truncate">
             {(artist.socialLinks as any)?.tiktokFollowers || '—'}
           </h3>
         </div>
 
         {/* Marketing Plan */}
         <section className="md:col-span-2 mt-4">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-              <Rocket className="text-cyan-500" size={24} />
-              Current Marketing Plan: "{activePlan?.title}"
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
+            <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-white flex items-center gap-2 min-w-0">
+              <Rocket className="text-cyan-500 flex-shrink-0" size={22} />
+              <span className="truncate">Marketing Plan: "{activePlan?.title}"</span>
             </h2>
-            <Link href="/dashboard/marketing" className="text-pink-400 hover:text-pink-300 text-sm font-semibold flex items-center gap-1">
+            <Link href="/dashboard/marketing" className="text-pink-400 hover:text-pink-300 text-sm font-semibold flex items-center gap-1 flex-shrink-0">
               Generate AI Plan
               <ExternalLink size={14} />
             </Link>
@@ -179,13 +179,13 @@ export default function ArtistDashboard() {
 
         {/* Opportunities */}
         <section className="md:col-span-2 mt-4">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-              <MessageSquare className="text-indigo-500" size={24} />
-              Opportunity Matching
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
+            <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-white flex items-center gap-2 min-w-0">
+              <MessageSquare className="text-indigo-500 flex-shrink-0" size={22} />
+              <span className="truncate">Opportunity Matching</span>
             </h2>
-            <Link href="/dashboard/opportunities" className="text-indigo-500 hover:text-indigo-400 text-sm font-semibold flex items-center gap-1">
-              View All Opportunities
+            <Link href="/dashboard/opportunities" className="text-indigo-500 hover:text-indigo-400 text-sm font-semibold flex items-center gap-1 flex-shrink-0">
+              View All
               <ExternalLink size={14} />
             </Link>
           </div>
