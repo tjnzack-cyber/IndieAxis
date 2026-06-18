@@ -109,6 +109,7 @@ model ArtistProfile {
   releases        Release[]
   revenueEntries  RevenueEntry[]
   fanContacts     FanContact[]
+  statSnapshots   StatSnapshot[]
 }
 
 model EPK {
@@ -354,5 +355,21 @@ model FanContact {
   metAt       String?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  @@index([artistId])
+}
+
+// ─── Phase 2: Analytics — Stat Snapshots ─────────────────────────────────────
+
+model StatSnapshot {
+  id                 String        @id @default(uuid())
+  artistId           String
+  artist             ArtistProfile @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  date               DateTime      @default(now())
+  spotifyListeners   Int?
+  instagramFollowers Int?
+  tiktokFollowers    Int?
+  youtubeSubscribers Int?
+  soundcloudPlays    Int?
+  createdAt          DateTime      @default(now())
   @@index([artistId])
 }
