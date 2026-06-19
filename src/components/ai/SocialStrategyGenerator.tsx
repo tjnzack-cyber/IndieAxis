@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Share2, Hash, Calendar } from 'lucide-react';
 import AIFormLayout, { AIFormField, inputClassName, textareaClassName } from './AIFormLayout';
 import AIResultPanel from './AIResultPanel';
+import TypewriterText from './TypewriterText';
 import { cn } from '@/lib/utils';
 
 interface SocialStrategyResult {
@@ -34,6 +35,14 @@ const platformColors: Record<string, string> = {
   X: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
 };
 
+const THINKING_MESSAGES = [
+  'Studying your genre & audience…',
+  'Scouting platform trends…',
+  'Drafting content pillars…',
+  'Building your 4-week calendar…',
+  'Polishing hashtag strategy…',
+];
+
 export default function SocialStrategyGenerator({
   defaultGenre = '',
   defaultLocation = '',
@@ -48,11 +57,13 @@ export default function SocialStrategyGenerator({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<SocialStrategyResult | null>(null);
+  const [overviewDone, setOverviewDone] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setOverviewDone(false);
 
     try {
       const res = await fetch('/api/ai/social-strategy', {
@@ -80,6 +91,7 @@ export default function SocialStrategyGenerator({
         icon={<Share2 size={22} />}
         onSubmit={handleSubmit}
         loading={loading}
+        thinkingMessages={THINKING_MESSAGES}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <AIFormField label="Artist Name">
@@ -110,89 +122,95 @@ export default function SocialStrategyGenerator({
       {result && (
         <AIResultPanel title="Your Social Media Strategy">
           <div className="space-y-8">
-            <p className="text-zinc-300 leading-relaxed">{result.overview}</p>
+            <p className="text-zinc-300 leading-relaxed min-h-[1.5em]">
+              <TypewriterText text={result.overview} speed={14} charsPerTick={2} onComplete={() => setOverviewDone(true)} />
+            </p>
 
-            <div className="space-y-4">
-              <h4 className="text-sm font-bold text-purple-300 uppercase tracking-widest">Platform Strategies</h4>
-              {result.platforms.map((platform, i) => (
-                <div key={i} className="bg-[#080814] border border-purple-500/20 rounded-xl p-5">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className={cn('text-xs font-black uppercase tracking-widest px-2.5 py-1 rounded-full border', platformColors[platform.name] || 'bg-purple-500/10 text-purple-300 border-purple-500/20')}>
-                      {platform.name}
-                    </span>
-                    <span className="text-xs text-zinc-500">{platform.postingFrequency}</span>
-                  </div>
-                  <p className="text-sm text-zinc-300 mb-3">{platform.strategy}</p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-[10px] font-bold text-pink-400 uppercase tracking-widest mb-2">Content Ideas</p>
-                      <ul className="space-y-1">
-                        {platform.contentIdeas.map((idea, j) => (
-                          <li key={j} className="text-xs text-zinc-400">• {idea}</li>
-                        ))}
-                      </ul>
+            {/* Rest of the result renders normally once the overview has finished typing,
+                so the page doesn't feel like it's withholding content unnecessarily */}
+            <div className={cn('space-y-8 transition-opacity duration-500', overviewDone ? 'opacity-100' : 'opacity-0')}>
+              <div className="space-y-4">
+                <h4 className="text-sm font-bold text-purple-300 uppercase tracking-widest">Platform Strategies</h4>
+                {result.platforms.map((platform, i) => (
+                  <div key={i} className="bg-[#080814] border border-purple-500/20 rounded-xl p-5">
+                    <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                      <span className={cn('text-xs font-black uppercase tracking-widest px-2.5 py-1 rounded-full border', platformColors[platform.name] || 'bg-purple-500/10 text-purple-300 border-purple-500/20')}>
+                        {platform.name}
+                      </span>
+                      <span className="text-xs text-zinc-500">{platform.postingFrequency}</span>
                     </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-2">Best Practices</p>
-                      <ul className="space-y-1">
-                        {platform.bestPractices.map((tip, j) => (
-                          <li key={j} className="text-xs text-zinc-400">• {tip}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {result.hashtagStrategy.length > 0 && (
-              <div className="bg-purple-900/20 border border-purple-500/20 rounded-xl p-5">
-                <h4 className="text-sm font-bold text-purple-300 flex items-center gap-2 mb-3">
-                  <Hash size={14} /> Hashtag Strategy
-                </h4>
-                <ul className="space-y-1">
-                  {result.hashtagStrategy.map((h, i) => (
-                    <li key={i} className="text-sm text-zinc-400">{h}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {result.contentCalendar.length > 0 && (
-              <div>
-                <h4 className="text-sm font-bold text-purple-300 uppercase tracking-widest mb-4 flex items-center gap-2">
-                  <Calendar size={14} /> 4-Week Content Calendar
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {result.contentCalendar.map((week, i) => (
-                    <div key={i} className="bg-[#080814] border border-pink-500/20 rounded-xl p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-xs font-black text-pink-400">WEEK {week.week}</span>
-                        <span className="text-sm font-semibold text-white">{week.focus}</span>
+                    <p className="text-sm text-zinc-300 mb-3">{platform.strategy}</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-[10px] font-bold text-pink-400 uppercase tracking-widest mb-2">Content Ideas</p>
+                        <ul className="space-y-1">
+                          {platform.contentIdeas.map((idea, j) => (
+                            <li key={j} className="text-xs text-zinc-400">• {idea}</li>
+                          ))}
+                        </ul>
                       </div>
-                      <ul className="space-y-1">
-                        {week.actions.map((action, j) => (
-                          <li key={j} className="text-xs text-zinc-400">• {action}</li>
-                        ))}
-                      </ul>
+                      <div>
+                        <p className="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-2">Best Practices</p>
+                        <ul className="space-y-1">
+                          {platform.bestPractices.map((tip, j) => (
+                            <li key={j} className="text-xs text-zinc-400">• {tip}</li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
-            )}
 
-            {result.engagementTips.length > 0 && (
-              <div>
-                <h4 className="text-sm font-bold text-purple-300 uppercase tracking-widest mb-3">Engagement Tips</h4>
-                <ul className="space-y-2">
-                  {result.engagementTips.map((tip, i) => (
-                    <li key={i} className="text-sm text-zinc-400 flex items-start gap-2">
-                      <span className="text-pink-400 mt-0.5">→</span> {tip}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+              {result.hashtagStrategy.length > 0 && (
+                <div className="bg-purple-900/20 border border-purple-500/20 rounded-xl p-5">
+                  <h4 className="text-sm font-bold text-purple-300 flex items-center gap-2 mb-3">
+                    <Hash size={14} /> Hashtag Strategy
+                  </h4>
+                  <ul className="space-y-1">
+                    {result.hashtagStrategy.map((h, i) => (
+                      <li key={i} className="text-sm text-zinc-400">{h}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {result.contentCalendar.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-bold text-purple-300 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <Calendar size={14} /> 4-Week Content Calendar
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {result.contentCalendar.map((week, i) => (
+                      <div key={i} className="bg-[#080814] border border-pink-500/20 rounded-xl p-4">
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
+                          <span className="text-xs font-black text-pink-400">WEEK {week.week}</span>
+                          <span className="text-sm font-semibold text-white">{week.focus}</span>
+                        </div>
+                        <ul className="space-y-1">
+                          {week.actions.map((action, j) => (
+                            <li key={j} className="text-xs text-zinc-400">• {action}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {result.engagementTips.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-bold text-purple-300 uppercase tracking-widest mb-3">Engagement Tips</h4>
+                  <ul className="space-y-2">
+                    {result.engagementTips.map((tip, i) => (
+                      <li key={i} className="text-sm text-zinc-400 flex items-start gap-2">
+                        <span className="text-pink-400 mt-0.5">→</span> {tip}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
         </AIResultPanel>
       )}
