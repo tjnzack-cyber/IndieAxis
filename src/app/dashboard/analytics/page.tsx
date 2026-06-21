@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { ArtistProfile } from '@/types';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
+import PageLoader from '@/components/PageLoader';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 
@@ -16,7 +17,7 @@ export default function AnalyticsPage() {
       .catch(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="p-8 text-center text-white bg-[#0b0b1a] min-h-screen">Loading analytics...</div>;
+  if (loading) return <PageLoader message="Crunching your analytics…" />;
 
   return (
     <div className="min-h-screen bg-[#0b0b1a] p-4 md:p-8">
