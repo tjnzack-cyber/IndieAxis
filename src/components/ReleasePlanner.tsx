@@ -2,7 +2,8 @@
 // src/components/ReleasePlanner.tsx
 
 import { useState, useEffect, useCallback } from 'react'
-import { Plus, CheckSquare, Square, Trash2, ChevronDown, Music, Calendar } from 'lucide-react'
+import { Plus, CheckSquare, Square, Trash2, ChevronDown, Music, Calendar, Megaphone } from 'lucide-react'
+import ReleaseAnnouncementModal from './ai/ReleaseAnnouncementModal'
 
 type ReleaseType   = 'SINGLE' | 'EP' | 'ALBUM' | 'MIXTAPE' | 'OTHER'
 type ReleaseStatus = 'IDEA' | 'IN_PROGRESS' | 'READY' | 'RELEASED'
@@ -34,7 +35,7 @@ const DEFAULT_TASKS = [
   'Pitch to blogs & press',
 ]
 
-export default function ReleasePlanner({ artistId }: { artistId: string }) {
+export default function ReleasePlanner({ artistId, artistName }: { artistId: string; artistName: string }) {
   const [releases, setReleases]     = useState<Release[]>([])
   const [expanded, setExpanded]     = useState<string | null>(null)
   const [showForm, setShowForm]     = useState(false)
@@ -44,6 +45,7 @@ export default function ReleasePlanner({ artistId }: { artistId: string }) {
     title: '', type: 'SINGLE' as ReleaseType,
     status: 'IDEA' as ReleaseStatus, releaseDate: '', notes: '',
   })
+  const [announcingRelease, setAnnouncingRelease] = useState<Release | null>(null)
 
   const load = useCallback(async () => {
     try {
@@ -252,7 +254,11 @@ export default function ReleasePlanner({ artistId }: { artistId: string }) {
 
                       {release.notes && <p className="text-zinc-600 text-xs mt-2 italic">{release.notes}</p>}
 
-                      <div className="flex justify-end mt-2">
+                      <div className="flex justify-between items-center mt-2">
+                        <button onClick={() => setAnnouncingRelease(release)}
+                          className="flex items-center gap-1.5 bg-gradient-to-r from-[#6c5ce7] to-pink-500 hover:opacity-90 text-white text-xs px-3 py-1.5 rounded-lg transition-all">
+                          <Megaphone size={12} /> Generate Announcement
+                        </button>
                         <button onClick={() => delRelease(release.id)}
                           className="flex items-center gap-1 text-red-400 hover:text-red-300 text-xs">
                           <Trash2 size={11} /> Delete release
@@ -265,6 +271,16 @@ export default function ReleasePlanner({ artistId }: { artistId: string }) {
             })}
           </div>
         )}
+
+      {announcingRelease && (
+        <ReleaseAnnouncementModal
+          artistName={artistName}
+          releaseTitle={announcingRelease.title}
+          releaseType={announcingRelease.type}
+          releaseDate={announcingRelease.releaseDate}
+          onClose={() => setAnnouncingRelease(null)}
+        />
+      )}
     </div>
   )
 }
