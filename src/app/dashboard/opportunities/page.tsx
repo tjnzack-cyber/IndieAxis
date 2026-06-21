@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { ArtistProfile } from '@/types';
 import GigOpportunitiesGenerator from '@/components/ai/GigOpportunitiesGenerator';
 import PitchingWindows from '@/components/PitchingWindows';
+import PageLoader from '@/components/PageLoader';
 import Link from 'next/link';
 import { ChevronLeft, MapPin } from 'lucide-react';
 
@@ -17,9 +18,7 @@ export default function OpportunitiesPage() {
       .catch(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return <div className="p-8 text-center text-white bg-[#0b0b1a] min-h-screen">Loading opportunities...</div>;
-  }
+  if (loading) return <PageLoader message="Finding your opportunities…" />;
 
   return (
     <div className="min-h-screen bg-[#0b0b1a] p-4 md:p-8">
@@ -51,7 +50,6 @@ export default function OpportunitiesPage() {
           defaultLocation={artist?.location || ''}
         />
 
-        {/* ── Phase 2: Pitching Windows ── */}
         <PitchingWindows artistGenre={artist?.genre} />
       </div>
     </div>
