@@ -1,9 +1,8 @@
 'use client'
-// src/app/dashboard/releases/page.tsx
-
 import { useEffect, useState } from 'react'
 import { ArtistProfile } from '@/types'
 import ReleasePlanner from '@/components/ReleasePlanner'
+import PageLoader from '@/components/PageLoader'
 import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
 
@@ -18,7 +17,7 @@ export default function ReleasesPage() {
       .catch(() => setLoading(false))
   }, [])
 
-  if (loading) return <div className="p-8 text-center text-white bg-[#0b0b1a] min-h-screen">Loading…</div>
+  if (loading) return <PageLoader message="Loading your releases…" />
 
   return (
     <div className="min-h-screen bg-[#0b0b1a] p-4 md:p-8">
