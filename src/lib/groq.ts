@@ -39,17 +39,49 @@ export async function generateWithGroq(
 }
 
 /**
+ * Attempts to repair the single most common way LLMs break JSON:
+ * an unescaped apostrophe or straight quote inside a string value
+ * (e.g. "artist's debut" instead of "artist\'s debut"). This walks
+ * the string character by character, tracking whether we're inside
+ * a JSON string, and escapes any apostrophe found there. It leaves
+ * the structural double-quotes (the ones that open/close each string)
+ * untouched by checking what follows/precedes them.
+ */
+function repairUnescapedApostrophes(jsonStr: string): string {
+  let result = '';
+  let inString = false;
+  let prevChar = '';
+
+  for (let i = 0; i < jsonStr.length; i++) {
+    const char = jsonStr[i];
+
+    if (char === '"' && prevChar !== '\\') {
+      inString = !inString;
+      result += char;
+    } else if (char === "'" && inString) {
+      // Escape stray apostrophes found inside string values
+      result += "\\'";
+    } else {
+      result += char;
+    }
+
+    prevChar = char;
+  }
+
+  return result;
+}
+
+/**
  * Parses a JSON object out of an LLM response, tolerating common
  * formatting mistakes:
  * - Markdown code fences (```json ... ```)
  * - Leading/trailing commentary text around the JSON
  * - Trailing commas before } or ]
  * - Smart/curly quotes used instead of straight quotes
+ * - Unescaped apostrophes inside string values
  */
 export function parseJsonFromResponse<T>(text: string): T {
-  // 1. Prefer content inside a fenced code block if present
   const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/);
-  // 2. Otherwise grab the first { ... last } in the text (handles stray commentary)
   const firstBrace = text.indexOf('{');
   const lastBrace = text.lastIndexOf('}');
   const braceSlice = firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace
@@ -62,26 +94,25 @@ export function parseJsonFromResponse<T>(text: string): T {
     text.trim(),
   ].filter(Boolean) as string[];
 
-  let lastError: unknown = null;
-
   for (const candidate of candidates) {
-    // Try parsing as-is first
+    // Attempt 1: parse as-is
     try {
       return JSON.parse(candidate) as T;
-    } catch (err) {
-      lastError = err;
-    }
+    } catch { /* try next strategy */ }
 
-    // Try a cleaned-up version: fix trailing commas and smart quotes
+    // Attempt 2: normalize smart quotes + strip trailing commas
+    const cleaned = candidate
+      .replace(/[\u2018\u2019]/g, "'")
+      .replace(/[\u201C\u201D]/g, '"')
+      .replace(/,\s*([}\]])/g, '$1');
     try {
-      const cleaned = candidate
-        .replace(/[\u2018\u2019]/g, "'")
-        .replace(/[\u201C\u201D]/g, '"')
-        .replace(/,\s*([}\]])/g, '$1'); // remove trailing commas before } or ]
       return JSON.parse(cleaned) as T;
-    } catch (err) {
-      lastError = err;
-    }
+    } catch { /* try next strategy */ }
+
+    // Attempt 3: repair unescaped apostrophes inside string values
+    try {
+      return JSON.parse(repairUnescapedApostrophes(cleaned)) as T;
+    } catch { /* try next candidate */ }
   }
 
   console.error('JSON parse failed. Raw response (first 800 chars):', text.slice(0, 800));
