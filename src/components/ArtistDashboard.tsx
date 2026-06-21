@@ -274,7 +274,7 @@ export default function ArtistDashboard() {
 
         {/* ── Phase 2: Release Planner ── */}
         <section className="md:col-span-2 mt-4">
-          <ReleasePlanner artistId={artist.id} />
+          <ReleasePlanner artistId={artist.id} artistName={artist.name} />
         </section>
 
         {/* ── Phase 2: Quick links ── */}
