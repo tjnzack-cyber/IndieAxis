@@ -5,6 +5,7 @@ import EducationalHub from '@/components/EducationalHub';
 import RoyaltyBodiesGenerator from '@/components/ai/RoyaltyBodiesGenerator';
 import SocialStrategyGenerator from '@/components/ai/SocialStrategyGenerator';
 import RevenueTracker from '@/components/RevenueTracker';
+import PageLoader from '@/components/PageLoader';
 import Link from 'next/link';
 import { ChevronLeft, GraduationCap, Coins, Share2, DollarSign } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -14,13 +15,16 @@ type Tab = 'edu' | 'social' | 'royalty' | 'revenue';
 export default function HubPage() {
   const [activeTab, setActiveTab] = useState<Tab>('social');
   const [artist, setArtist] = useState<ArtistProfile | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/profile')
       .then((res) => res.json())
-      .then((data) => setArtist(data))
-      .catch(() => {});
+      .then((data) => { setArtist(data); setLoading(false); })
+      .catch(() => setLoading(false));
   }, []);
+
+  if (loading) return <PageLoader message="Opening the Hub…" />;
 
   const tabs: { id: Tab; label: string; icon: typeof Share2 }[] = [
     { id: 'social',   label: 'Social Strategy',   icon: Share2        },
