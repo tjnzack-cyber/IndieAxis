@@ -346,6 +346,7 @@ model FanContact {
   name        String
   email       String?
   phone       String?
+  nationality String?
   type        ContactType @default(FAN)
   tags        String[]
   notes       String?
