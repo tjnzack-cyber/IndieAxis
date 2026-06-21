@@ -11,6 +11,7 @@ import OpportunityTracker from './OpportunityTracker';
 import GoalTracker from './GoalTracker';
 import EPKEditor from './EPKEditor';
 import ReleasePlanner from './ReleasePlanner';
+import PageLoader from './PageLoader';
 
 interface ArtistProfileExtended extends ArtistProfile {
   user: User;
@@ -37,7 +38,7 @@ export default function ArtistDashboard() {
       });
   }, []);
 
-  if (loading) return <div className="p-8 text-center text-white">Loading your dashboard...</div>;
+  if (loading) return <PageLoader message="Loading your dashboard…" />;
   if (!artist) return (
     <div className="p-8 text-center text-white min-h-screen bg-[#0b0b1a] flex flex-col items-center justify-center">
       <h2 className="text-2xl font-bold mb-2">Welcome to IndieAxis!</h2>
