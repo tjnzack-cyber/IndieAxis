@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Rocket, CheckCircle2, Circle, Lightbulb } from 'lucide-react';
 import AIFormLayout, { AIFormField, inputClassName, textareaClassName } from './AIFormLayout';
 import AIResultPanel from './AIResultPanel';
+import TypewriterText from './TypewriterText';
 import { cn } from '@/lib/utils';
 
 interface MarketingPlanResult {
@@ -20,6 +21,14 @@ interface Props {
   defaultName?: string;
 }
 
+const THINKING_MESSAGES = [
+  'Studying your genre & market…',
+  'Mapping your career stage…',
+  'Building your 8-week roadmap…',
+  'Sequencing weekly actions…',
+  'Finalising insights…',
+];
+
 export default function MarketingPlanGenerator({
   defaultGenre = '',
   defaultLocation = '',
@@ -34,11 +43,13 @@ export default function MarketingPlanGenerator({
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<MarketingPlanResult | null>(null);
   const [completedTasks, setCompletedTasks] = useState<Set<number>>(new Set());
+  const [strategyDone, setStrategyDone] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setStrategyDone(false);
 
     try {
       const res = await fetch('/api/ai/marketing-plan', {
@@ -80,6 +91,7 @@ export default function MarketingPlanGenerator({
         icon={<Rocket size={22} />}
         onSubmit={handleSubmit}
         loading={loading}
+        thinkingMessages={THINKING_MESSAGES}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <AIFormField label="Artist Name">
@@ -142,8 +154,10 @@ export default function MarketingPlanGenerator({
         <AIResultPanel title={result.title}>
           <div className="space-y-8">
             <div>
-              <p className="text-zinc-300 leading-relaxed">{result.strategy}</p>
-              <div className="mt-4 flex items-center gap-3">
+              <p className="text-zinc-300 leading-relaxed min-h-[1.5em]">
+                <TypewriterText text={result.strategy} speed={14} charsPerTick={2} onComplete={() => setStrategyDone(true)} />
+              </p>
+              <div className={cn('mt-4 flex items-center gap-3 transition-opacity duration-500', strategyDone ? 'opacity-100' : 'opacity-0')}>
                 <div className="flex-1 h-2 bg-purple-900/50 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-[#6c5ce7] to-pink-500 transition-all duration-500"
@@ -154,64 +168,66 @@ export default function MarketingPlanGenerator({
               </div>
             </div>
 
-            <div>
-              <h4 className="text-sm font-bold text-purple-300 uppercase tracking-widest mb-3">Key Goals</h4>
-              <ul className="space-y-2">
-                {result.goals.map((goal, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-zinc-300">
-                    <span className="w-1.5 h-1.5 rounded-full bg-pink-500 mt-2 flex-shrink-0" />
-                    {goal}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-sm font-bold text-purple-300 uppercase tracking-widest mb-4">Action Roadmap</h4>
-              <div className="space-y-3">
-                {result.tasks.map((task, i) => (
-                  <div
-                    key={i}
-                    onClick={() => toggleTask(i)}
-                    className={cn(
-                      'p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3',
-                      completedTasks.has(i)
-                        ? 'bg-purple-900/20 border-purple-500/20 opacity-60'
-                        : 'bg-[#080814] border-purple-500/20 hover:border-pink-500/30'
-                    )}
-                  >
-                    {completedTasks.has(i) ? (
-                      <CheckCircle2 className="text-pink-400 mt-0.5" size={18} />
-                    ) : (
-                      <Circle className="text-purple-500 mt-0.5" size={18} />
-                    )}
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start gap-2">
-                        <h5 className={cn('font-medium text-sm', completedTasks.has(i) && 'line-through text-zinc-500')}>
-                          {task.title}
-                        </h5>
-                        <span className="text-[10px] font-mono text-purple-400 uppercase">Week {task.week}</span>
-                      </div>
-                      <p className="text-xs text-zinc-500 mt-1">{task.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {result.insights.length > 0 && (
-              <div className="bg-purple-900/20 border border-purple-500/20 rounded-xl p-5">
-                <h4 className="text-sm font-bold text-purple-300 flex items-center gap-2 mb-3">
-                  <Lightbulb size={16} />
-                  Strategy Insights
-                </h4>
+            <div className={cn('space-y-8 transition-opacity duration-500', strategyDone ? 'opacity-100' : 'opacity-0')}>
+              <div>
+                <h4 className="text-sm font-bold text-purple-300 uppercase tracking-widest mb-3">Key Goals</h4>
                 <ul className="space-y-2">
-                  {result.insights.map((insight, i) => (
-                    <li key={i} className="text-sm text-zinc-400">{insight}</li>
+                  {result.goals.map((goal, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-zinc-300">
+                      <span className="w-1.5 h-1.5 rounded-full bg-pink-500 mt-2 flex-shrink-0" />
+                      {goal}
+                    </li>
                   ))}
                 </ul>
               </div>
-            )}
+
+              <div>
+                <h4 className="text-sm font-bold text-purple-300 uppercase tracking-widest mb-4">Action Roadmap</h4>
+                <div className="space-y-3">
+                  {result.tasks.map((task, i) => (
+                    <div
+                      key={i}
+                      onClick={() => toggleTask(i)}
+                      className={cn(
+                        'p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3',
+                        completedTasks.has(i)
+                          ? 'bg-purple-900/20 border-purple-500/20 opacity-60'
+                          : 'bg-[#080814] border-purple-500/20 hover:border-pink-500/30'
+                      )}
+                    >
+                      {completedTasks.has(i) ? (
+                        <CheckCircle2 className="text-pink-400 mt-0.5 flex-shrink-0" size={18} />
+                      ) : (
+                        <Circle className="text-purple-500 mt-0.5 flex-shrink-0" size={18} />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start gap-2 flex-wrap">
+                          <h5 className={cn('font-medium text-sm', completedTasks.has(i) && 'line-through text-zinc-500')}>
+                            {task.title}
+                          </h5>
+                          <span className="text-[10px] font-mono text-purple-400 uppercase flex-shrink-0">Week {task.week}</span>
+                        </div>
+                        <p className="text-xs text-zinc-500 mt-1">{task.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {result.insights.length > 0 && (
+                <div className="bg-purple-900/20 border border-purple-500/20 rounded-xl p-5">
+                  <h4 className="text-sm font-bold text-purple-300 flex items-center gap-2 mb-3">
+                    <Lightbulb size={16} />
+                    Strategy Insights
+                  </h4>
+                  <ul className="space-y-2">
+                    {result.insights.map((insight, i) => (
+                      <li key={i} className="text-sm text-zinc-400">{insight}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
         </AIResultPanel>
       )}
