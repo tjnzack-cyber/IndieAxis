@@ -30,7 +30,7 @@ export default function ReleasesPage() {
           <h1 className="text-4xl font-black text-white tracking-tight">Release Planner</h1>
           <p className="text-zinc-500 mt-1">Plan every step from idea to release day</p>
         </header>
-        {artist && <ReleasePlanner artistId={artist.id} />}
+        {artist && <ReleasePlanner artistId={artist.id} artistName={artist.name} />}
       </div>
     </div>
   )
