@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { FileText, Quote, Mail, Star } from 'lucide-react';
 import AIFormLayout, { AIFormField, inputClassName, textareaClassName } from './AIFormLayout';
 import AIResultPanel from './AIResultPanel';
+import TypewriterText from './TypewriterText';
+import { cn } from '@/lib/utils';
 
 interface EPKResult {
   headline: string;
@@ -27,6 +29,14 @@ interface Props {
   defaultLocation?: string;
 }
 
+const THINKING_MESSAGES = [
+  'Reading your bio & achievements…',
+  'Crafting your headline…',
+  'Writing your press bio…',
+  'Formatting press quotes…',
+  'Finalising your EPK…',
+];
+
 export default function EPKGenerator({
   defaultName = '',
   defaultBio = '',
@@ -43,11 +53,13 @@ export default function EPKGenerator({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<EPKResult | null>(null);
+  const [bioDone, setBioDone] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setBioDone(false);
 
     try {
       const res = await fetch('/api/ai/epk', {
@@ -76,6 +88,7 @@ export default function EPKGenerator({
         onSubmit={handleSubmit}
         loading={loading}
         submitLabel="Build My EPK"
+        thinkingMessages={THINKING_MESSAGES}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <AIFormField label="Artist Name *">
@@ -111,65 +124,69 @@ export default function EPKGenerator({
           <div className="space-y-8">
             <div className="text-center py-6 border-b border-purple-500/20">
               <p className="text-pink-400 text-sm font-bold uppercase tracking-widest mb-2">{result.oneLiner}</p>
-              <h3 className="text-3xl font-black text-white uppercase tracking-tight">{result.headline}</h3>
+              <h3 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight">{result.headline}</h3>
               <p className="text-purple-300 mt-2 text-sm">{result.genreDescription}</p>
             </div>
 
             <div>
               <h4 className="text-sm font-bold text-purple-300 uppercase tracking-widest mb-3 border-b border-purple-500/20 pb-2">About</h4>
-              <div className="text-zinc-300 leading-relaxed whitespace-pre-line text-sm">{result.bio}</div>
+              <div className="text-zinc-300 leading-relaxed whitespace-pre-line text-sm min-h-[1.5em]">
+                <TypewriterText text={result.bio} speed={12} charsPerTick={2} onComplete={() => setBioDone(true)} />
+              </div>
             </div>
 
-            {result.highlights.length > 0 && (
-              <div>
-                <h4 className="text-sm font-bold text-purple-300 uppercase tracking-widest mb-3 flex items-center gap-2">
-                  <Star size={14} className="text-pink-400" /> Highlights
-                </h4>
-                <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {result.highlights.map((h, i) => (
-                    <li key={i} className="text-sm text-zinc-300 bg-purple-900/20 border border-purple-500/20 rounded-lg px-4 py-2">{h}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {result.achievements.length > 0 && (
-              <div>
-                <h4 className="text-sm font-bold text-purple-300 uppercase tracking-widest mb-3">Achievements</h4>
-                <ul className="space-y-2">
-                  {result.achievements.map((a, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-zinc-300">
-                      <span className="text-pink-400">✦</span> {a}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {result.pressQuotes.length > 0 && (
-              <div>
-                <h4 className="text-sm font-bold text-purple-300 uppercase tracking-widest mb-4 flex items-center gap-2">
-                  <Quote size={14} /> Press
-                </h4>
-                <div className="space-y-4">
-                  {result.pressQuotes.map((q, i) => (
-                    <blockquote key={i} className="border-l-4 border-pink-500 pl-6 py-2">
-                      <p className="text-zinc-200 italic text-sm">&ldquo;{q.text}&rdquo;</p>
-                      <cite className="text-pink-400 text-xs font-bold uppercase tracking-wider not-italic mt-2 block">— {q.source}</cite>
-                    </blockquote>
-                  ))}
+            <div className={cn('space-y-8 transition-opacity duration-500', bioDone ? 'opacity-100' : 'opacity-0')}>
+              {result.highlights.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-bold text-purple-300 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <Star size={14} className="text-pink-400" /> Highlights
+                  </h4>
+                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {result.highlights.map((h, i) => (
+                      <li key={i} className="text-sm text-zinc-300 bg-purple-900/20 border border-purple-500/20 rounded-lg px-4 py-2">{h}</li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
-            )}
+              )}
 
-            <div className="bg-gradient-to-br from-purple-900/30 to-pink-900/20 border border-purple-500/20 rounded-xl p-6">
-              <h4 className="text-sm font-bold text-purple-300 uppercase tracking-widest mb-4 flex items-center gap-2">
-                <Mail size={14} /> Contact
-              </h4>
-              <div className="space-y-2 text-sm">
-                <p className="text-zinc-300"><span className="text-purple-400 font-semibold">Booking:</span> {result.contactSection.bookingEmail}</p>
-                <p className="text-zinc-300"><span className="text-purple-400 font-semibold">Press:</span> {result.contactSection.pressContact}</p>
-                <p className="text-zinc-300"><span className="text-purple-400 font-semibold">Social:</span> {result.contactSection.socialHandles}</p>
+              {result.achievements.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-bold text-purple-300 uppercase tracking-widest mb-3">Achievements</h4>
+                  <ul className="space-y-2">
+                    {result.achievements.map((a, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-zinc-300">
+                        <span className="text-pink-400">✦</span> {a}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {result.pressQuotes.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-bold text-purple-300 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <Quote size={14} /> Press
+                  </h4>
+                  <div className="space-y-4">
+                    {result.pressQuotes.map((q, i) => (
+                      <blockquote key={i} className="border-l-4 border-pink-500 pl-6 py-2">
+                        <p className="text-zinc-200 italic text-sm">&ldquo;{q.text}&rdquo;</p>
+                        <cite className="text-pink-400 text-xs font-bold uppercase tracking-wider not-italic mt-2 block">— {q.source}</cite>
+                      </blockquote>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="bg-gradient-to-br from-purple-900/30 to-pink-900/20 border border-purple-500/20 rounded-xl p-6">
+                <h4 className="text-sm font-bold text-purple-300 uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <Mail size={14} /> Contact
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <p className="text-zinc-300"><span className="text-purple-400 font-semibold">Booking:</span> {result.contactSection.bookingEmail}</p>
+                  <p className="text-zinc-300"><span className="text-purple-400 font-semibold">Press:</span> {result.contactSection.pressContact}</p>
+                  <p className="text-zinc-300"><span className="text-purple-400 font-semibold">Social:</span> {result.contactSection.socialHandles}</p>
+                </div>
               </div>
             </div>
           </div>
