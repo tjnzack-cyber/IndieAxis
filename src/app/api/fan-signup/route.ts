@@ -1,53 +1,108 @@
-// src/app/api/fan-signup/route.ts
-// PUBLIC route — no auth required. Fans on the public EPK page submit their
-// details here, saved straight into the artist's Fan CRM as a FAN contact.
-import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+'use client'
+// src/components/FanSignupForm.tsx — used on the PUBLIC EPK page
 
-export async function POST(req: NextRequest) {
-  let body: any
-  try {
-    body = await req.json()
-  } catch (e) {
-    console.error('fan-signup: failed to parse request body', e)
-    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
-  }
+import { useState } from 'react'
+import { Check, Loader2 } from 'lucide-react'
 
-  const { artistId, email, name, phone, nationality } = body
+export default function FanSignupForm({ artistId }: { artistId: string }) {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [nationality, setNationality] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [done, setDone] = useState(false)
+  const [alreadyIn, setAlreadyIn] = useState(false)
+  const [error, setError] = useState('')
 
-  if (!artistId) {
-    console.error('fan-signup: missing artistId. Body received:', body)
-    return NextResponse.json({ error: 'artistId is required' }, { status: 400 })
-  }
-  if (!email) {
-    console.error('fan-signup: missing email. Body received:', body)
-    return NextResponse.json({ error: 'email is required' }, { status: 400 })
-  }
-
-  try {
-    // Avoid duplicate signups for the same email + artist
-    const existing = await prisma.fanContact.findFirst({
-      where: { artistId, email },
-    })
-    if (existing) {
-      return NextResponse.json({ alreadySubscribed: true })
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    try {
+      const res = await fetch('/api/fan-signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ artistId, email, name, phone, nationality }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data.error || 'Something went wrong')
+      }
+      if (data.alreadySubscribed) {
+        setAlreadyIn(true)
+      } else {
+        setDone(true)
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong — try again')
+    } finally {
+      setLoading(false)
     }
-
-    const contact = await prisma.fanContact.create({
-      data: {
-        artistId,
-        name: name?.trim() || email.split('@')[0],
-        email,
-        phone: phone?.trim() || undefined,
-        nationality: nationality?.trim() || undefined,
-        type: 'FAN',
-        tags: ['mailing-list'],
-        notes: 'Signed up via public EPK page',
-      },
-    })
-    return NextResponse.json(contact, { status: 201 })
-  } catch (err) {
-    console.error('fan-signup: database error', err)
-    return NextResponse.json({ error: 'Could not save signup' }, { status: 500 })
   }
+
+  if (done) {
+    return (
+      <div className="flex items-center justify-center gap-2 text-green-400 font-semibold py-3">
+        <Check size={18} /> You're on the list!
+      </div>
+    )
+  }
+
+  if (alreadyIn) {
+    return (
+      <div className="flex items-center justify-center gap-2 text-purple-300 font-semibold py-3">
+        <Check size={18} /> You're already subscribed!
+      </div>
+    )
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <input
+          type="text"
+          placeholder="Full name"
+          value={name}
+          onChange={e => setName(e.target.value)}
+          className="bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-400 transition-colors"
+        />
+        <input
+          type="email"
+          required
+          placeholder="Email *"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          className="bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-400 transition-colors"
+        />
+        <input
+          type="tel"
+          placeholder="Phone number"
+          value={phone}
+          onChange={e => setPhone(e.target.value)}
+          className="bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-400 transition-colors"
+        />
+        <input
+          type="text"
+          placeholder="Nationality"
+          value={nationality}
+          onChange={e => setNationality(e.target.value)}
+          className="bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-400 transition-colors"
+        />
+      </div>
+
+      {error && <p className="text-red-400 text-xs text-center">{error}</p>}
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#6c5ce7] to-pink-500 hover:opacity-90 disabled:opacity-60 text-white text-sm font-bold px-6 py-3 rounded-xl transition-all"
+      >
+        {loading ? <Loader2 size={16} className="animate-spin" /> : 'Subscribe'}
+      </button>
+
+      <p className="text-gray-600 text-xs text-center">
+        Only your email is required — everything else is optional.
+      </p>
+    </form>
+  )
 }
