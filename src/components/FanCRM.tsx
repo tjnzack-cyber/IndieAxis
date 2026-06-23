@@ -272,14 +272,14 @@ export default function FanCRM({ artistId }: { artistId: string }) {
                     <div className="border-t border-zinc-800 px-4 pb-4 pt-3 space-y-3">
                       <div className="flex flex-wrap gap-4">
                         {contact.email && (
-                          <a href={`mailto:${contact.email}`} className="flex items-center gap-1.5 text-indigo-400 hover:text-indigo-300 text-xs">
+                          <span className="flex items-center gap-1.5 text-zinc-400 text-xs">
                             <Mail size={13} /> {contact.email}
-                          </a>
+                          </span>
                         )}
                         {contact.phone && (
-                          <a href={`tel:${contact.phone}`} className="flex items-center gap-1.5 text-indigo-400 hover:text-indigo-300 text-xs">
+                          <span className="flex items-center gap-1.5 text-zinc-400 text-xs">
                             <Phone size={13} /> {contact.phone}
-                          </a>
+                          </span>
                         )}
                         {contact.instagram && (
                           <a href={`https://instagram.com/${contact.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer"
