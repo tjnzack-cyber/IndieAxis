@@ -59,7 +59,7 @@ export default async function EPKPublicPage({ params }: Props) {
             src={primaryPhoto.url}
             alt={epk.artist.name}
             fill
-            className="object-cover object-center opacity-60 scale-90"
+            className="object-cover object-center opacity-60 scale-75"
             priority
           />
         )}
