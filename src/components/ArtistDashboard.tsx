@@ -11,6 +11,7 @@ import OpportunityTracker from './OpportunityTracker';
 import GoalTracker from './GoalTracker';
 import EPKEditor from './EPKEditor';
 import ReleasePlanner from './ReleasePlanner';
+import DeadlineReminderButton from './DeadlineReminderButton';
 import PageLoader from './PageLoader';
 
 interface ArtistProfileExtended extends ArtistProfile {
@@ -106,6 +107,7 @@ export default function ArtistDashboard() {
             <Bell size={18} />
             <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-cyan-500 rounded-full border-2 border-white dark:border-zinc-900" />
           </button>
+          <DeadlineReminderButton artistId={artist.id} />
           <button
             onClick={() => window.location.href = '/dashboard/profile/edit'}
             className="px-4 py-2 bg-gradient-to-r from-[#6c5ce7] to-pink-500 text-white text-sm font-bold rounded-lg hover:opacity-90 transition-all flex items-center gap-2"
