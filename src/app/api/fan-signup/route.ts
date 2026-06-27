@@ -1,6 +1,4 @@
 // src/app/api/fan-signup/route.ts
-// PUBLIC route — no auth required. Fans on the public EPK page submit their
-// details here, saved straight into the artist's Fan CRM as a FAN contact.
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 
@@ -9,23 +7,21 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json()
   } catch (e) {
-    console.error('fan-signup: failed to parse request body', e)
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
   }
 
   const { artistId, email, name, phone, nationality } = body
 
   if (!artistId) {
-    console.error('fan-signup: missing artistId. Body received:', body)
+    console.error('fan-signup: missing artistId. Body:', body)
     return NextResponse.json({ error: 'artistId is required' }, { status: 400 })
   }
   if (!email) {
-    console.error('fan-signup: missing email. Body received:', body)
+    console.error('fan-signup: missing email. Body:', body)
     return NextResponse.json({ error: 'email is required' }, { status: 400 })
   }
 
   try {
-    // Avoid duplicate signups for the same email + artist
     const existing = await prisma.fanContact.findFirst({
       where: { artistId, email },
     })
@@ -45,6 +41,20 @@ export async function POST(req: NextRequest) {
         notes: 'Signed up via public EPK page',
       },
     })
+
+    // Fire emails in background — don't block the response
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://indie-axis.vercel.app'
+    fetch(`${baseUrl}/api/email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'fan-signup',
+        artistId,
+        fanName: name?.trim() || email.split('@')[0],
+        fanEmail: email,
+      }),
+    }).catch(err => console.error('Email trigger failed:', err))
+
     return NextResponse.json(contact, { status: 201 })
   } catch (err) {
     console.error('fan-signup: database error', err)
