@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     })
 
     // Fire emails in background — don't block the response
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://indie-axis.vercel.app'
+    const baseUrl = 'https://indie-axis.vercel.app'
     fetch(`${baseUrl}/api/email`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
