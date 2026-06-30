@@ -64,6 +64,22 @@ enum GoalCategory {
   GENERAL
 }
 
+// ─── Phase 3: Subscription system enums ───────────────────────────────────────
+
+enum PlanTier {
+  FREE
+  EPK_PRO
+  PRO
+  LIFETIME_PRO
+  TEAM
+}
+
+enum BillingInterval {
+  MONTHLY
+  YEARLY
+  LIFETIME
+}
+
 // ─── Existing models ──────────────────────────────────────────────────────────
 
 model User {
@@ -78,6 +94,11 @@ model User {
   artistProfile       ArtistProfile?
   payments            Payment[]
   passwordResetTokens PasswordResetToken[]
+  // ── Phase 3 additions ──
+  subscription        Subscription?
+  usageCounters        UsageCounter[]
+  aiCreditGrants        AiCreditGrant[]
+  oneTimePurchases      OneTimePurchase[]
 }
 
 model PasswordResetToken {
@@ -182,15 +203,18 @@ model PitchingWindow {
 }
 
 model Payment {
-  id         String   @id @default(uuid())
-  amount     Float
-  currency   String
-  status     String
-  reference  String   @unique
-  trackingId String?  @unique
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
-  createdAt  DateTime @default(now())
+  id              String   @id @default(uuid())
+  amount          Float
+  currency        String
+  status          String
+  reference       String   @unique
+  trackingId      String?  @unique
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  createdAt       DateTime @default(now())
+  // ── Phase 3 additions: carries purchase intent from initiate → IPN ──
+  planTier        String?
+  billingInterval String?
 }
 
 // ─── Phase 1 new models ───────────────────────────────────────────────────────
@@ -373,4 +397,63 @@ model StatSnapshot {
   soundcloudPlays    Int?
   createdAt          DateTime      @default(now())
   @@index([artistId])
+}
+
+// ─── Phase 3: Subscription system ─────────────────────────────────────────────
+
+model Subscription {
+  id                String           @id @default(uuid())
+  userId            String           @unique
+  user              User             @relation(fields: [userId], references: [id])
+  tier              PlanTier         @default(FREE)
+  billingInterval   BillingInterval?
+  status            String           @default("active") // active, expired, lifetime
+  currentPeriodEnd  DateTime?
+  lastPaymentId     String?
+  // reserved for Team plan, unused until built
+  teamId            String?
+  seatLimit         Int?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+}
+
+model UsageCounter {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  metric      String   // "ai_generation" | "epk_count" | "release_count" | "fan_contact_count"
+  count       Int      @default(0)
+  periodStart DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@unique([userId, metric, periodStart])
+}
+
+model AiCreditGrant {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  amount    Int
+  remaining Int
+  source    String    // "purchase" | "promo" | "plan_topup"
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model OneTimePurchase {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  productKey String   // "epk_once" | "ai_bio_rewrite" | etc
+  paymentId  String?
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+}
+
+model PlanAvailability {
+  id              String   @id @default(uuid())
+  planKey         String   @unique
+  enabled         Boolean  @default(false)
+  maxRedemptions  Int?
+  redemptionsUsed Int      @default(0)
 }
