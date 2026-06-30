@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
+import { auth } from '@/auth';
 import { generateWithGroq, parseJsonFromResponse } from '@/lib/groq';
+import { canUse, incrementUsage } from '@/lib/entitlements';
 
 interface EPKResult {
   headline: string;
@@ -18,9 +20,27 @@ interface EPKResult {
 
 export async function POST(request: Request) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const userId = session.user.id;
+
+    const { allowed, limit, used } = await canUse(userId, 'ai_generation');
+    if (!allowed) {
+      return NextResponse.json(
+        {
+          error: 'AI generation limit reached for your plan this month',
+          limit,
+          used,
+          upgradeRequired: true,
+        },
+        { status: 403 }
+      );
+    }
+
     const { name, bio, genre, location, achievements, contactEmail, socialLinks } =
       await request.json();
-
     if (!name || !genre) {
       return NextResponse.json(
         { error: 'Artist name and genre are required' },
@@ -29,9 +49,7 @@ export async function POST(request: Request) {
     }
 
     const systemPrompt = `You are a professional music publicist who writes compelling Electronic Press Kits (EPKs) for indie artists. Write in a professional but authentic tone. Always respond with valid JSON only.`;
-
     const userPrompt = `Build an Electronic Press Kit for this indie artist.
-
 Name: ${name}
 Bio: ${bio || 'Not provided'}
 Genre: ${genre}
@@ -39,7 +57,6 @@ Location: ${location || 'Not specified'}
 Achievements: ${achievements || 'None listed yet'}
 Contact Email: ${contactEmail || 'Not provided'}
 Social Links: ${socialLinks || 'Not provided'}
-
 Return JSON:
 {
   "headline": "Compelling one-line headline for the artist",
@@ -55,11 +72,12 @@ Return JSON:
   "oneLiner": "Short elevator pitch (under 20 words)",
   "highlights": ["key highlight 1", "key highlight 2", "key highlight 3"]
 }
-
 Generate 2 realistic-sounding press quotes if none provided. Polish the bio professionally.`;
 
     const raw = await generateWithGroq(systemPrompt, userPrompt);
     const result = parseJsonFromResponse<EPKResult>(raw);
+
+    await incrementUsage(userId, 'ai_generation');
 
     return NextResponse.json(result);
   } catch (error) {
