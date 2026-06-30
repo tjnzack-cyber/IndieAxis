@@ -1,7 +1,17 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getPesapalTransactionStatus } from '@/lib/pesapal';
+import { PlanTier, BillingInterval } from '@/lib/plans.config';
+
+function computePeriodEnd(interval: BillingInterval, existingEnd: Date | null): Date {
+  const base = existingEnd && existingEnd > new Date() ? new Date(existingEnd) : new Date();
+  if (interval === 'YEARLY') {
+    base.setFullYear(base.getFullYear() + 1);
+  } else {
+    base.setMonth(base.getMonth() + 1);
+  }
+  return base;
+}
 
 export async function GET(
   request: NextRequest,
@@ -10,13 +20,11 @@ export async function GET(
   try {
     const { id } = await params;
 
-    // Try finding by reference first
     let payment = await prisma.payment.findUnique({
       where: { reference: id },
       include: { user: true },
     });
 
-    // If not found, try trackingId
     if (!payment) {
       payment = await prisma.payment.findUnique({
         where: { trackingId: id },
@@ -28,24 +36,46 @@ export async function GET(
       return NextResponse.json({ error: 'Payment not found' }, { status: 404 });
     }
 
-    // If still PENDING in our DB, check with Pesapal to see if it updated
     if (payment.status === 'PENDING' && payment.trackingId) {
       try {
         const pesapalStatus = await getPesapalTransactionStatus(payment.trackingId);
-        
+
         if (pesapalStatus.status === 'COMPLETED') {
-          // Sync DB
           await prisma.payment.update({
             where: { id: payment.id },
             data: { status: 'COMPLETED' },
           });
 
+          const tier = (payment.planTier as PlanTier) || 'PRO';
+          const interval = (payment.billingInterval as BillingInterval) || 'MONTHLY';
+
+          const existingSub = await prisma.subscription.findUnique({
+            where: { userId: payment.userId },
+          });
+          const currentPeriodEnd = computePeriodEnd(interval, existingSub?.currentPeriodEnd ?? null);
+
+          await prisma.subscription.upsert({
+            where: { userId: payment.userId },
+            create: {
+              userId: payment.userId,
+              tier,
+              billingInterval: interval,
+              status: 'active',
+              currentPeriodEnd,
+              lastPaymentId: payment.id,
+            },
+            update: {
+              tier,
+              billingInterval: interval,
+              status: 'active',
+              currentPeriodEnd,
+              lastPaymentId: payment.id,
+            },
+          });
+
           await prisma.user.update({
             where: { id: payment.userId },
-            data: { 
-              subscriptionStatus: 'PREMIUM',
-              trialEndsAt: null
-            },
+            data: { subscriptionStatus: 'PREMIUM', trialEndsAt: null },
           });
 
           payment.status = 'COMPLETED';
@@ -58,16 +88,23 @@ export async function GET(
         }
       } catch (pesapalError) {
         console.error('Error syncing with Pesapal:', pesapalError);
-        // Continue with local status
       }
     }
+
+    const subscription = await prisma.subscription.findUnique({
+      where: { userId: payment.userId },
+    });
 
     return NextResponse.json({
       status: payment.status,
       amount: payment.amount,
       currency: payment.currency,
       reference: payment.reference,
+      planTier: payment.planTier,
+      billingInterval: payment.billingInterval,
       subscriptionStatus: payment.user.subscriptionStatus,
+      tier: subscription?.tier || 'FREE',
+      currentPeriodEnd: subscription?.currentPeriodEnd || null,
     });
   } catch (error) {
     console.error('Pesapal Status Check Error:', error);
