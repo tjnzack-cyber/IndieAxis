@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
+import { auth } from '@/auth';
 import { generateWithGroq, parseJsonFromResponse } from '@/lib/groq';
+import { canUse, incrementUsage } from '@/lib/entitlements';
 
 interface ReleaseAnnouncementResult {
   instagramCaption: string;
@@ -22,6 +24,25 @@ function sanitizeInput(value: string): string {
 
 export async function POST(request: Request) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const userId = session.user.id;
+
+    const { allowed, limit, used } = await canUse(userId, 'ai_generation');
+    if (!allowed) {
+      return NextResponse.json(
+        {
+          error: 'AI generation limit reached for your plan this month',
+          limit,
+          used,
+          upgradeRequired: true,
+        },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const artistName  = sanitizeInput(body.artistName || '');
     const releaseTitle = sanitizeInput(body.releaseTitle || '');
@@ -77,6 +98,8 @@ Hashtags must be plain words or phrases with no spaces and no # symbol.`;
       const retryRaw = await generateWithGroq(systemPrompt, retryPrompt);
       result = parseJsonFromResponse<ReleaseAnnouncementResult>(retryRaw);
     }
+
+    await incrementUsage(userId, 'ai_generation');
 
     return NextResponse.json(result);
   } catch (error) {
