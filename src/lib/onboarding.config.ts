@@ -73,10 +73,9 @@ export const FEATURE_TRIGGERS: Record<string, string[]> = {
   ESTABLISHED: ['revenue', 'opportunities'],
 };
 
-export const DASHBOARD_FEATURES: Record
-  string,
-  { title: string; description: string; href: string; emoji: string }
-> = {
+type DashboardFeature = { title: string; description: string; href: string; emoji: string };
+
+export const DASHBOARD_FEATURES: Record<string, DashboardFeature> = {
   marketing: {
     title: 'Generate Your Marketing Plan',
     description: 'Get an AI-built 8-week marketing strategy tailored to your genre.',
