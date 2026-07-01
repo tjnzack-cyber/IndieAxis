@@ -4,12 +4,16 @@ import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 
 // Whitelisted fields per step — prevents a malformed request from writing
-// to unrelated ArtistProfile columns.
+// to unrelated ArtistProfile columns. Steps 6 (subscription) and 7 (success)
+// have no fields of their own — they only exist so onboardingStep/complete
+// can advance past them.
 const STEP_FIELDS: Record<number, string[]> = {
   2: ['name', 'profileImageUrl', 'country', 'genre', 'languages'],
   3: ['journeyStage'],
   4: ['challenges'],
   5: ['goals90Day'],
+  6: [],
+  7: [],
 };
 
 export async function GET() {
@@ -23,8 +27,6 @@ export async function GET() {
     return NextResponse.json({ error: 'User not found' }, { status: 404 });
   }
 
-  // Same auto-create-if-missing behavior as /api/profile, so onboarding
-  // works even if this is the very first request the user ever makes.
   let artist = await prisma.artistProfile.findUnique({ where: { userId: user.id } });
   if (!artist) {
     artist = await prisma.artistProfile.create({
@@ -63,13 +65,12 @@ export async function PATCH(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { step, data, complete } = body as { step: number; data: Record<string, any>; complete?: boolean };
+  const { step, data, complete } = body as { step: number; data?: Record<string, any>; complete?: boolean };
 
-  if (!step || !STEP_FIELDS[step]) {
+  if (step === undefined || !(step in STEP_FIELDS)) {
     return NextResponse.json({ error: 'Invalid step' }, { status: 400 });
   }
 
-  // Only pick allowed fields for this step — ignore anything else in the payload
   const allowed = STEP_FIELDS[step];
   const updateData: Record<string, any> = {};
   for (const field of allowed) {
