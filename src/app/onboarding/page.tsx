@@ -64,7 +64,6 @@ export default function OnboardingPage() {
         setJourneyStage(data.journeyStage || '');
         setChallenges(data.challenges || []);
         setGoals90Day(data.goals90Day || []);
-        // Resume at saved step, but never skip the welcome screen automatically
         setStep(data.onboardingStep > 0 ? data.onboardingStep : 1);
         setLoading(false);
       })
@@ -108,7 +107,6 @@ export default function OnboardingPage() {
     }
   };
 
-  // Fetch plan status when reaching Step 6
   useEffect(() => {
     if (step === 6 && !entitlements) {
       fetch('/api/entitlements')
@@ -135,7 +133,6 @@ export default function OnboardingPage() {
     <div className="min-h-screen bg-[#0b0b1a] flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
 
-        {/* Progress Bar — hidden on welcome and success screens */}
         {step > 1 && step < 7 && (
           <div className="flex gap-1.5 mb-8">
             {Array.from({ length: TOTAL_STEPS - 2 }).map((_, i) => (
@@ -149,7 +146,6 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* STEP 1 — Welcome */}
         {step === 1 && (
           <div className="text-center space-y-6 py-12">
             <div className="text-5xl mb-2">🎵</div>
@@ -164,11 +160,10 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* STEP 2 — Basic Info */}
         {step === 2 && (
           <div className="space-y-6">
             <div>
-              <h1 className="text-3xl font-black text-white mb-1">Tell us about you 🎤</h1>
+              <h1 className="text-3xl font-black text-white mb-1">Tell us about you</h1>
               <p className="text-zinc-400">The basics — you can always edit these later.</p>
             </div>
 
@@ -271,11 +266,10 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* STEP 3 — Journey Stage */}
         {step === 3 && (
           <div className="space-y-6">
             <div>
-              <h1 className="text-3xl font-black text-white mb-1">Your journey 🌱</h1>
+              <h1 className="text-3xl font-black text-white mb-1">Your journey</h1>
               <p className="text-zinc-400">Where are you currently in your music journey?</p>
             </div>
             <div className="space-y-3">
@@ -313,11 +307,10 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* STEP 4 — Biggest Challenge */}
         {step === 4 && (
           <div className="space-y-6">
             <div>
-              <h1 className="text-3xl font-black text-white mb-1">Biggest challenge 💭</h1>
+              <h1 className="text-3xl font-black text-white mb-1">Biggest challenge</h1>
               <p className="text-zinc-400">What's holding you back right now? Pick all that apply.</p>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -353,11 +346,10 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* STEP 5 — 90-Day Goals */}
         {step === 5 && (
           <div className="space-y-6">
             <div>
-              <h1 className="text-3xl font-black text-white mb-1">Your 90-day goals 🎯</h1>
+              <h1 className="text-3xl font-black text-white mb-1">Your 90-day goals</h1>
               <p className="text-zinc-400">What would you like to achieve in the next 90 days?</p>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -393,11 +385,10 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* STEP 6 — Subscription */}
         {step === 6 && (
           <div className="space-y-6">
             <div>
-              <h1 className="text-3xl font-black text-white mb-1">Choose your plan ✨</h1>
+              <h1 className="text-3xl font-black text-white mb-1">Choose your plan</h1>
               <p className="text-zinc-400">You can always upgrade later — this won't hold you up.</p>
             </div>
 
@@ -417,11 +408,11 @@ export default function OnboardingPage() {
             ) : (
               <div className="space-y-3">
                 <div className="p-5 bg-zinc-800/50 border border-zinc-700 rounded-xl">
-                  <p className="font-bold text-white mb-1">✨ EPK Pro — $4.99/mo</p>
-                  <p className="text-sm text-zinc-400">Unlimited EPKs, custom branding, PDF export & QR codes.</p>
+                  <p className="font-bold text-white mb-1">EPK Pro — $4.99/mo</p>
+                  <p className="text-sm text-zinc-400">Unlimited EPKs, custom branding, PDF export and QR codes.</p>
                 </div>
                 <div className="p-5 bg-gradient-to-br from-[#6c5ce7]/20 to-pink-500/10 border border-pink-500/30 rounded-xl">
-                  <p className="font-bold text-white mb-1">🚀 IndieAxis Pro — $12.99/mo</p>
+                  <p className="font-bold text-white mb-1">IndieAxis Pro — $12.99/mo</p>
                   <p className="text-sm text-zinc-400">Unlimited AI, releases, fan CRM, and advanced analytics.</p>
                 </div>
                 
@@ -430,7 +421,7 @@ export default function OnboardingPage() {
                   rel="noopener noreferrer"
                   className="block text-center text-pink-400 text-sm font-semibold hover:text-pink-300 pt-1"
                 >
-                  View full plan comparison →
+                  View full plan comparison
                 </a>
               </div>
             )}
@@ -452,7 +443,6 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* STEP 7 — Success */}
         {step === 7 && (
           <div className="text-center space-y-6 py-8">
             <div className="text-5xl mb-2">🎉</div>
