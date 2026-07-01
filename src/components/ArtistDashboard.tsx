@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ArtistProfile, EPK, MarketingPlan, GigApplication, Gig, User } from '@/types';
 import { cn } from '@/lib/utils';
-import { Users, BarChart3, Rocket, MessageSquare, Share2, Edit2, ExternalLink, Bell, GraduationCap, ChevronRight } from 'lucide-react';
+import { Users, BarChart3, Rocket, MessageSquare, Share2, Edit2, ExternalLink, Bell, GraduationCap, ChevronRight, Sparkles } from 'lucide-react';
 
 import Link from 'next/link';
 import NotificationCenter from './NotificationCenter';
@@ -21,16 +21,36 @@ interface ArtistProfileExtended extends ArtistProfile {
   gigApplications: (GigApplication & { gig: Gig })[];
 }
 
+interface EntitlementsData {
+  tier: 'FREE' | 'EPK_PRO' | 'PRO' | 'LIFETIME_PRO' | 'TEAM';
+  status: string;
+  currentPeriodEnd: string | null;
+  limits: Record<string, number | 'unlimited'>;
+  usage: Record<string, number>;
+}
+
+const TIER_LABELS: Record<string, string> = {
+  FREE: 'Free',
+  EPK_PRO: 'EPK Pro',
+  PRO: 'IndieAxis Pro',
+  LIFETIME_PRO: 'IndieAxis Pro (Lifetime)',
+  TEAM: 'Team',
+};
+
 export default function ArtistDashboard() {
   const [artist, setArtist] = useState<ArtistProfileExtended | null>(null);
+  const [entitlements, setEntitlements] = useState<EntitlementsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
-    fetch('/api/profile')
-      .then(res => res.json())
-      .then(data => {
-        setArtist(data);
+    Promise.all([
+      fetch('/api/profile').then(res => res.json()),
+      fetch('/api/entitlements').then(res => res.json()),
+    ])
+      .then(([profileData, entitlementsData]) => {
+        setArtist(profileData);
+        setEntitlements(entitlementsData?.error ? null : entitlementsData);
         setLoading(false);
       })
       .catch(err => {
@@ -51,30 +71,44 @@ export default function ArtistDashboard() {
   );
 
   const activePlan = artist.marketingPlans.find(p => p.status === 'ACTIVE') || artist.marketingPlans[0];
-  const trialDaysLeft = artist.user.trialEndsAt ? Math.ceil((new Date(artist.user.trialEndsAt).getTime() - new Date().getTime()) / (1000 * 3600 * 24)) : 0;
+
+  const tier = entitlements?.tier || 'FREE';
+  const aiLimit = entitlements?.limits?.ai_generation;
+  const aiUsed = entitlements?.usage?.ai_generation || 0;
+  const aiUnlimited = aiLimit === 'unlimited';
 
   return (
     <div className="max-w-4xl mx-auto bg-zinc-950 rounded-xl shadow-2xl overflow-hidden min-h-screen border border-white/5">
-      {/* Trial Banner */}
-      {artist.user.subscriptionStatus === 'PREMIUM' && artist.user.trialEndsAt && (
-        <div className="bg-[#6c5ce7] text-white px-6 py-2 flex items-center justify-between">
-          <div className="text-sm font-bold">
-            🔥 Free trial active: {trialDaysLeft} days remaining
+      {/* Plan banner — tier-aware */}
+      {tier === 'FREE' && (
+        <div className="bg-zinc-800 text-zinc-300 px-6 py-2 flex items-center justify-between flex-wrap gap-2">
+          <div className="text-sm font-bold flex items-center gap-2">
+            You are on the Free plan.
+            {!aiUnlimited && (
+              <span className="text-zinc-500 font-normal">
+                {aiUsed}/{aiLimit} AI generations used this month
+              </span>
+            )}
           </div>
-          <Link href="/pricing" className="text-xs font-black uppercase tracking-widest bg-white text-[#6c5ce7] px-3 py-1 rounded-full hover:bg-zinc-200 transition-colors">
-            Upgrade Now
+          <Link href="/pricing" className="text-xs font-black uppercase tracking-widest bg-cyan-400 text-black px-3 py-1 rounded-full hover:bg-white transition-colors">
+            See Plans
           </Link>
         </div>
       )}
 
-      {/* Free Plan Banner */}
-      {artist.user.subscriptionStatus === 'FREE' && (
-        <div className="bg-zinc-800 text-zinc-300 px-6 py-2 flex items-center justify-between">
-          <div className="text-sm font-bold">
-            You are on the Free plan. Upgrade for AI marketing & gig matching.
+      {tier !== 'FREE' && (
+        <div className="bg-[#6c5ce7] text-white px-6 py-2 flex items-center justify-between flex-wrap gap-2">
+          <div className="text-sm font-bold flex items-center gap-2">
+            <Sparkles size={14} />
+            {TIER_LABELS[tier] || tier} active
+            {!aiUnlimited && (
+              <span className="opacity-80 font-normal">
+                — {aiUsed}/{aiLimit} AI generations used this month
+              </span>
+            )}
           </div>
-          <Link href="/pricing" className="text-xs font-black uppercase tracking-widest bg-cyan-400 text-black px-3 py-1 rounded-full hover:bg-white transition-colors">
-            See Plans
+          <Link href="/pricing" className="text-xs font-black uppercase tracking-widest bg-white text-[#6c5ce7] px-3 py-1 rounded-full hover:bg-zinc-200 transition-colors">
+            Manage Plan
           </Link>
         </div>
       )}
