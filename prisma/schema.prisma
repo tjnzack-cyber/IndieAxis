@@ -80,6 +80,36 @@ enum BillingInterval {
   LIFETIME
 }
 
+// ─── Phase 4: Onboarding enums ─────────────────────────────────────────────────
+
+enum ArtistJourneyStage {
+  JUST_STARTING
+  RELEASING_FIRST_MUSIC
+  GROWING_AUDIENCE
+  ESTABLISHED
+}
+
+enum ArtistChallenge {
+  GROWING_FANS
+  MARKETING
+  MUSIC_DISTRIBUTION
+  FINDING_COLLABORATORS
+  NETWORKING
+  GETTING_BOOKINGS
+  MAKING_MONEY
+  INDUSTRY_KNOWLEDGE
+  OTHER
+}
+
+enum ArtistGoal90Day {
+  RELEASE_SONG
+  GROW_FOLLOWERS
+  BOOK_PERFORMANCES
+  COLLABORATE
+  IMPROVE_BRANDING
+  GENERATE_INCOME
+}
+
 // ─── Existing models ──────────────────────────────────────────────────────────
 
 model User {
@@ -131,6 +161,14 @@ model ArtistProfile {
   revenueEntries  RevenueEntry[]
   fanContacts     FanContact[]
   statSnapshots   StatSnapshot[]
+  // ── Phase 4: Onboarding additions ──
+  country             String?
+  languages           String[]              @default([])
+  journeyStage        ArtistJourneyStage?
+  challenges          ArtistChallenge[]      @default([])
+  goals90Day          ArtistGoal90Day[]      @default([])
+  onboardingStep      Int                    @default(0)
+  onboardingCompleted Boolean                @default(false)
 }
 
 model EPK {
