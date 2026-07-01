@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { ArtistProfile, EPK, MarketingPlan, GigApplication, Gig, User } from '@/types';
 import { cn } from '@/lib/utils';
 import { Users, BarChart3, Rocket, MessageSquare, Share2, Edit2, ExternalLink, Bell, GraduationCap, ChevronRight, Sparkles } from 'lucide-react';
@@ -13,12 +14,17 @@ import EPKEditor from './EPKEditor';
 import ReleasePlanner from './ReleasePlanner';
 import DeadlineReminderButton from './DeadlineReminderButton';
 import PageLoader from './PageLoader';
+import PersonalizedRecommendations from './PersonalizedRecommendations';
 
 interface ArtistProfileExtended extends ArtistProfile {
   user: User;
   epks: EPK[];
   marketingPlans: MarketingPlan[];
   gigApplications: (GigApplication & { gig: Gig })[];
+  onboardingCompleted?: boolean;
+  journeyStage?: string | null;
+  challenges?: string[];
+  goals90Day?: string[];
 }
 
 interface EntitlementsData {
@@ -38,6 +44,7 @@ const TIER_LABELS: Record<string, string> = {
 };
 
 export default function ArtistDashboard() {
+  const router = useRouter();
   const [artist, setArtist] = useState<ArtistProfileExtended | null>(null);
   const [entitlements, setEntitlements] = useState<EntitlementsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -49,6 +56,10 @@ export default function ArtistDashboard() {
       fetch('/api/entitlements').then(res => res.json()),
     ])
       .then(([profileData, entitlementsData]) => {
+        if (profileData && profileData.onboardingCompleted === false) {
+          router.replace('/onboarding');
+          return;
+        }
         setArtist(profileData);
         setEntitlements(entitlementsData?.error ? null : entitlementsData);
         setLoading(false);
@@ -57,7 +68,7 @@ export default function ArtistDashboard() {
         console.error('Error loading artist profile:', err);
         setLoading(false);
       });
-  }, []);
+  }, [router]);
 
   if (loading) return <PageLoader message="Loading your dashboard…" />;
   if (!artist) return (
@@ -151,6 +162,15 @@ export default function ArtistDashboard() {
           </button>
         </div>
       </header>
+
+      {/* Personalized recommendations — based on onboarding answers */}
+      <div className="p-4 md:p-8 pb-0">
+        <PersonalizedRecommendations
+          journeyStage={artist.journeyStage ?? null}
+          challenges={artist.challenges || []}
+          goals90Day={artist.goals90Day || []}
+        />
+      </div>
 
       {showNotifications && (
         <div className="p-8 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
